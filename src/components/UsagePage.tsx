@@ -51,11 +51,6 @@ const supportedChains = [
   { id: sepolia.id, name: 'Ethereum Sepolia (Testnet)' },
 ];
 
-const dummyTokenData = [80, 60, 40, 70, 90, 60, 50, 80, 100, 60, 80, 90, 70, 60, 80, 90, 100, 80, 60, 40, 70, 90, 60, 50, 80, 100, 60, 80, 90, 70];
-const dummyApiData = [60, 80, 100, 90, 70, 60, 80, 90, 100, 80, 60, 40, 70, 90, 60, 50, 80, 100, 60, 80, 90, 70, 80, 60, 40, 70, 90, 60, 50, 80];
-const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const dummySpendingData = [40, 55, 38, 70, 60, 80, 50, 90, 65, 85, 75, 100];
-
 // Helper to create a smooth SVG path from points (Catmull-Rom to Bezier)
 function getSmoothLinePath(points: [number, number][]) {
   if (points.length < 2) return '';
