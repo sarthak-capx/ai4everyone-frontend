@@ -29,6 +29,7 @@ import Logger from '../utils/logger';
 import { safeNavigate } from '../utils/validation';
 import { ethers } from 'ethers';
 import { createPaymentQuote, CAPX_PAYMASTER_ABI, ERC20_ABI, fetchAssets, AssetInfo } from '../utils/payments';
+import { formatWalletError } from '../utils/errorMessages';
 
 // Register ChartJS components
 ChartJS.register(
@@ -464,7 +465,7 @@ const UsagePage: React.FC = React.memo(() => {
       setPaymentStep('idle');
     } catch (err) {
       Logger.error('Payment failed:', err);
-      setPaymentError(err instanceof Error ? err.message : 'Payment failed. Please try again.');
+      setPaymentError(formatWalletError(err));
       setPaymentStep('idle');
     }
   };
@@ -479,7 +480,7 @@ const UsagePage: React.FC = React.memo(() => {
       verifyPayment(receipt.transactionHash, selectedAmount || parseFloat(customAmount) || 0, receipt.chainId)
         .finally(() => setPaymentStep('idle'));
     } else if (isConfirmingError) {
-      setPaymentError("Transaction failed or was rejected.");
+      setPaymentError('Transaction cancelled by user.');
       setPaymentStep('idle');
     }
   }, [isConfirming, isConfirmed, isConfirmingError, receipt]);
@@ -492,7 +493,7 @@ const UsagePage: React.FC = React.memo(() => {
     if (assets.length === 0) return 'Initializing...';
     switch (paymentStep) {
       case 'processing': return 'Processing...';
-      case 'waiting': return 'Confirming on-chain...';
+      case 'waiting': return 'Confirming transaction...';
       case 'verifying': return 'Verifying payment...';
       default: return 'Pay with Crypto';
     }
