@@ -23,6 +23,7 @@ const Sidebar = () => {
 
   const loginWithWallet = async (walletAddress: string) => {
     try {
+      if (sessionStorage.getItem('logout_flag')) return;
       const timestamp = Date.now();
       const message = `AI4EVERYONE Login: ${walletAddress} at ${timestamp}`;
       if (!walletClient || !address) throw new Error('No wallet client found');
@@ -74,6 +75,13 @@ const Sidebar = () => {
     setIsSyncing(true);
     const hasPersistedSession = false; // disabled persistence: always prompt on refresh
 
+    // If logout is in progress, do not attempt wallet login
+    if (sessionStorage.getItem('logout_flag')) {
+      setPendingLogin(false);
+      setIsSyncing(false);
+      return;
+    }
+
     if (isWalletLoading) {
       // Wait for wagmi to finish reconnecting before deciding UI state
       setPendingLogin(false);
@@ -105,6 +113,7 @@ const Sidebar = () => {
   }, [isConnected, address, walletClient, user, isWalletLoading]);
 
   useEffect(() => {
+    if (sessionStorage.getItem('logout_flag')) return;
     if (pendingLogin && isConnected && address && walletClient && !isWalletLoading) {
       loginWithWallet(address).finally(() => {
         setIsSyncing(false);
@@ -116,9 +125,12 @@ const Sidebar = () => {
   const isActive = (path: string) => location.pathname === path;
 
   const handleLogout = () => {
+    setError('');
+    setPendingLogin(false);
+    setIsSyncing(false);
     setUser(null);
-    secureStorage.clearAll();
-    disconnect();
+    secureStorage.secureLogout();
+    try { disconnect(); } catch { }
   };
 
   const displayEmail = (email?: string) => {
@@ -183,7 +195,7 @@ const Sidebar = () => {
             </button>
           )}
         </div>
-        {error && <div className="text-red-500 mt-2">{error}</div>}
+
       </div>
     </aside>
   );

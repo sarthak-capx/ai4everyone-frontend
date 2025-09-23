@@ -88,8 +88,8 @@ const SettingsPage = React.memo(() => {
         }
 
         setUser(null);
-        secureStorage.clearAll();
-        disconnect();
+        await secureStorage.secureLogout();
+        try { disconnect(); } catch { }
         setMobileMenuOpen(false);
     };
 

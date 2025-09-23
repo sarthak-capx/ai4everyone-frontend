@@ -63,7 +63,7 @@ const MobileNav = () => {
     const handleLogout = () => {
         setUser(null);
         secureStorage.secureLogout();
-        disconnect();
+        try { disconnect(); } catch { }
         setMobileMenuOpen(false);
     };
 

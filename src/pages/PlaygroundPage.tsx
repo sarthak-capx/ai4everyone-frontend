@@ -272,7 +272,7 @@ const PlaygroundPage = () => {
         setUser(null);
         // Use secure logout with cross-tab synchronization
         secureStorage.secureLogout();
-        disconnect();
+        try { disconnect(); } catch { }
         setMobileMenuOpen(false);
     };
 

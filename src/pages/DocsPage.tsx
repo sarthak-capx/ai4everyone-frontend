@@ -3763,7 +3763,7 @@ const DocsPage = React.memo(() => {
         }
     };
     const isActive = (path) => location.pathname === path;
-    const handleLogout = () => { setUser(null); secureStorage.secureLogout(); disconnect(); setMobileMenuOpen(false); };
+    const handleLogout = () => { setUser(null); secureStorage.secureLogout(); try { disconnect(); } catch { } setMobileMenuOpen(false); };
     const handleTabClick = (tab) => { setActiveTab(tab); setCopied(false); };
     const handleCopy = (code) => {
         secureClipboardCopy(code, {
