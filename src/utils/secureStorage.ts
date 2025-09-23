@@ -14,7 +14,7 @@ const getCurrentUser = () => currentUserContext;
 const deriveUserKey = async (userId: string, userEmail: string, salt?: Uint8Array): Promise<{ key: CryptoKey, salt: Uint8Array }> => {
   // Generate random salt if not provided (for new encryptions)
   const randomSalt = salt || crypto.getRandomValues(new Uint8Array(32));
-  
+
   // Use consistent key material with user-specific entropy
   const keyMaterial = `${userId}:${userEmail}:ai4everyone-secure`;
   const encoder = new TextEncoder();
@@ -50,22 +50,22 @@ const encryptApiKeys = async (data: string, userId: string, userEmail: string): 
     const { key, salt } = await deriveUserKey(userId, userEmail);
     const encoder = new TextEncoder();
     const dataBuffer = encoder.encode(data);
-    
+
     // Generate random IV
     const iv = crypto.getRandomValues(new Uint8Array(12));
-    
+
     const encrypted = await crypto.subtle.encrypt(
       { name: 'AES-GCM', iv },
       key,
       dataBuffer
     );
-    
+
     // Combine salt + IV + encrypted data
     const combined = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
     combined.set(salt, 0);
     combined.set(iv, salt.length);
     combined.set(new Uint8Array(encrypted), salt.length + iv.length);
-    
+
     // Return as base64
     return btoa(String.fromCharCode(...combined));
   } catch (error) {
@@ -81,20 +81,20 @@ const decryptApiKeys = async (encryptedData: string, userId: string, userEmail: 
     const combined = new Uint8Array(
       atob(encryptedData).split('').map(char => char.charCodeAt(0))
     );
-    
+
     // Extract salt + IV + encrypted data
     const salt = combined.slice(0, 32);
     const iv = combined.slice(32, 44);
     const encrypted = combined.slice(44);
-    
+
     const { key } = await deriveUserKey(userId, userEmail, salt);
-    
+
     const decrypted = await crypto.subtle.decrypt(
       { name: 'AES-GCM', iv },
       key,
       encrypted
     );
-    
+
     const decoder = new TextDecoder();
     return decoder.decode(decrypted);
   } catch (error) {
@@ -109,22 +109,22 @@ export const encryptJWT = async (jwt: string, userId: string, userEmail: string)
     const { key, salt } = await deriveUserKey(userId, userEmail);
     const encoder = new TextEncoder();
     const jwtBuffer = encoder.encode(jwt);
-    
+
     // Generate random IV for each encryption
     const iv = crypto.getRandomValues(new Uint8Array(12));
-    
+
     const encrypted = await crypto.subtle.encrypt(
       { name: 'AES-GCM', iv },
       key,
       jwtBuffer
     );
-    
+
     // Combine salt + IV + encrypted data
     const combined = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
     combined.set(salt, 0);
     combined.set(iv, salt.length);
     combined.set(new Uint8Array(encrypted), salt.length + iv.length);
-    
+
     // Return as base64
     return btoa(String.fromCharCode(...combined));
   } catch (error) {
@@ -139,20 +139,20 @@ export const decryptJWT = async (encryptedJWT: string, userId: string, userEmail
     const combined = new Uint8Array(
       atob(encryptedJWT).split('').map(char => char.charCodeAt(0))
     );
-    
+
     // Extract salt + IV + encrypted data
     const salt = combined.slice(0, 32);
     const iv = combined.slice(32, 44);
     const encrypted = combined.slice(44);
-    
+
     const { key } = await deriveUserKey(userId, userEmail, salt);
-    
+
     const decrypted = await crypto.subtle.decrypt(
       { name: 'AES-GCM', iv },
       key,
       encrypted
     );
-    
+
     const decoder = new TextDecoder();
     return decoder.decode(decrypted);
   } catch (error) {
@@ -177,7 +177,7 @@ export const getEncryptedJWT = async (userId: string, userEmail: string): Promis
   try {
     const encryptedJWT = sessionStorage.getItem('encrypted_jwt');
     if (!encryptedJWT) return null;
-    
+
     const jwt = await decryptJWT(encryptedJWT, userId, userEmail);
     return jwt;
   } catch (error) {
@@ -199,12 +199,12 @@ class SecureTokenManager {
   private token: string | null = null;
   private tokenExpiry: number | null = null;
   private encryptionKey: CryptoKey | null = null;
-  
+
   private constructor() {
     // Initialize encryption key
     this.initializeEncryption();
   }
-  
+
   private async initializeEncryption() {
     try {
       // Generate a runtime encryption key for in-memory JWT storage
@@ -218,20 +218,20 @@ class SecureTokenManager {
       // Continue without encryption - will use obfuscation fallback
     }
   }
-  
+
   static getInstance(): SecureTokenManager {
     if (!SecureTokenManager.instance) {
       SecureTokenManager.instance = new SecureTokenManager();
     }
     return SecureTokenManager.instance;
   }
-  
+
   async setToken(jwt: string): Promise<void> {
     try {
       // Parse JWT to get expiry
       const payload = JSON.parse(atob(jwt.split('.')[1]));
       this.tokenExpiry = payload.exp * 1000;
-      
+
       // Encrypt token in memory if encryption is available
       if (this.encryptionKey) {
         const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -240,7 +240,7 @@ class SecureTokenManager {
           this.encryptionKey,
           new TextEncoder().encode(jwt)
         );
-        
+
         // Store encrypted token with IV
         const combined = new Uint8Array(iv.length + encrypted.byteLength);
         combined.set(iv, 0);
@@ -250,7 +250,7 @@ class SecureTokenManager {
         // Fallback to obfuscation if encryption fails
         this.token = btoa(jwt.split('').reverse().join(''));
       }
-      
+
       // Set auto-clear on expiry
       const timeUntilExpiry = this.tokenExpiry - Date.now();
       if (timeUntilExpiry > 0) {
@@ -261,16 +261,16 @@ class SecureTokenManager {
       throw error;
     }
   }
-  
+
   async getToken(): Promise<string | null> {
     if (!this.token) return null;
-    
+
     // Check expiry
     if (this.tokenExpiry && Date.now() > this.tokenExpiry) {
       this.clearToken();
       return null;
     }
-    
+
     try {
       // Decrypt token if encrypted
       if (this.encryptionKey) {
@@ -279,7 +279,7 @@ class SecureTokenManager {
         );
         const iv = combined.slice(0, 12);
         const encrypted = combined.slice(12);
-        
+
         const decrypted = await crypto.subtle.decrypt(
           { name: 'AES-GCM', iv },
           this.encryptionKey,
@@ -303,7 +303,7 @@ class SecureTokenManager {
       return null;
     }
   }
-  
+
   clearToken(): void {
     // Overwrite with random data before clearing
     if (this.token) {
@@ -363,12 +363,12 @@ export const debugJWTStatus = async (): Promise<void> => {
   const jwt = await getCurrentJWT();
   const encryptedJWT = sessionStorage.getItem('encrypted_jwt');
   const userSession = sessionStorage.getItem('user_session');
-  
-  
+
+
   console.log('- Current JWT in memory:', jwt ? 'Present' : 'Missing');
   console.log('- Encrypted JWT in storage:', encryptedJWT ? 'Present' : 'Missing');
   console.log('- User session in storage:', userSession ? 'Present' : 'Missing');
-  
+
   if (userSession) {
     try {
       const user = JSON.parse(userSession);
@@ -378,7 +378,7 @@ export const debugJWTStatus = async (): Promise<void> => {
       console.log('- User session parse error:', e);
     }
   }
-  
+
   if (encryptedJWT) {
     console.log('- Encrypted JWT length:', encryptedJWT.length);
   }
@@ -400,12 +400,36 @@ export const secureStorage = {
   setApiKeys: async (apiKeys: any[]) => {
     try {
       const userData = getCurrentUser();
-      
+
+      // Merge with existing cache to preserve plaintext `key` if present
+      let mergedKeys = apiKeys;
+      try {
+        const existing = await secureStorage.getApiKeys();
+        if (Array.isArray(existing) && existing.length > 0) {
+          const existingById: Record<string, any> = {};
+          for (const item of existing) {
+            if (item && typeof item === 'object' && item.id) {
+              existingById[item.id] = item;
+            }
+          }
+          mergedKeys = apiKeys.map((k) => {
+            const prev = k && k.id ? existingById[k.id] : undefined;
+            if (prev && prev.key && !k.key) {
+              return { ...k, key: prev.key };
+            }
+            return k;
+          });
+        }
+      } catch {
+        // If merging fails, proceed with incoming apiKeys as-is
+        mergedKeys = apiKeys;
+      }
+
       if (userData?.id && userData?.email) {
         // Encrypt before storing
         const encryptedData = await encryptApiKeys(
-          JSON.stringify(apiKeys), 
-          userData.id, 
+          JSON.stringify(mergedKeys),
+          userData.id,
           userData.email
         );
         sessionStorage.setItem('api_keys_cache', encryptedData);
@@ -415,7 +439,7 @@ export const secureStorage = {
         Logger.warn('API keys not stored - no user context available');
         return;
       }
-      
+
       broadcastStorageChange('set', 'secure_api_keys');
     } catch (error) {
       Logger.error('Failed to store API keys:', error);
@@ -428,14 +452,20 @@ export const secureStorage = {
     try {
       const cached = sessionStorage.getItem('api_keys_cache');
       if (!cached) return [];
-      
+
       const userData = getCurrentUser();
-      
+
       if (userData?.id && userData?.email) {
         // Try to decrypt with current key
         try {
           const decryptedData = await decryptApiKeys(cached, userData.id, userData.email);
-          return JSON.parse(decryptedData);
+          const parsed = JSON.parse(decryptedData);
+          if (Array.isArray(parsed)) {
+            const withKey = parsed.filter((k: any) => k && k.key);
+            const withoutKey = parsed.filter((k: any) => !k || !k.key);
+            return [...withKey, ...withoutKey];
+          }
+          return parsed;
         } catch (decryptError) {
           Logger.warn('Decryption failed, trying as unencrypted data:', decryptError);
           // If decryption fails, might be old unencrypted data or old encryption format
@@ -445,7 +475,9 @@ export const secureStorage = {
             if (Array.isArray(parsedData) && parsedData.length > 0) {
               Logger.info('Migrating unencrypted API keys to encrypted format');
               await secureStorage.setApiKeys(parsedData);
-              return parsedData;
+              const withKey = parsedData.filter((k: any) => k && k.key);
+              const withoutKey = parsedData.filter((k: any) => !k || !k.key);
+              return [...withKey, ...withoutKey];
             }
             return [];
           } catch (parseError) {
@@ -457,7 +489,12 @@ export const secureStorage = {
         // No user context, try parsing as unencrypted
         try {
           const parsedData = JSON.parse(cached);
-          return Array.isArray(parsedData) ? parsedData : [];
+          if (Array.isArray(parsedData)) {
+            const withKey = parsedData.filter((k: any) => k && k.key);
+            const withoutKey = parsedData.filter((k: any) => !k || !k.key);
+            return [...withKey, ...withoutKey];
+          }
+          return [];
         } catch (parseError) {
           Logger.error('Failed to parse API keys without user context:', parseError);
           return [];
@@ -479,23 +516,18 @@ export const secureStorage = {
   },
 
   // Balance
-  setBalance: async (balance: number) => {
+  setBalance: async (_balance: number) => {
     try {
-      // Store in session storage for now
-      sessionStorage.setItem('balance_cache', balance.toString());
-      broadcastStorageChange('set', 'secure_balance');
+      // Balance caching disabled intentionally
+      sessionStorage.removeItem('balance_cache');
     } catch (error) {
-      Logger.error('Failed to store balance:', error);
+      Logger.error('Failed to update balance cache (disabled):', error);
     }
   },
 
   getBalance: () => {
     try {
-      // First try to get from session storage cache
-      const cached = sessionStorage.getItem('balance_cache');
-      if (cached) {
-        return parseFloat(cached);
-      }
+      // Balance caching disabled; always return 0 and fetch live on demand
       return 0;
     } catch (error) {
       Logger.error('Failed to get balance:', error);
@@ -506,7 +538,6 @@ export const secureStorage = {
   removeBalance: async () => {
     try {
       sessionStorage.removeItem('balance_cache');
-      broadcastStorageChange('remove', 'secure_balance');
     } catch (error) {
       Logger.error('Failed to remove balance:', error);
     }
@@ -520,7 +551,7 @@ export const secureStorage = {
       sessionStorage.removeItem('balance_cache');
       sessionStorage.removeItem('session_data');
       sessionStorage.removeItem('logout_flag');
-      
+
       // Broadcast clear action to other tabs
       broadcastStorageChange('clear', 'all');
     } catch (error) {
@@ -534,13 +565,13 @@ export const secureStorage = {
       // Set logout flag with timestamp
       const logoutTimestamp = Date.now().toString();
       sessionStorage.setItem('logout_flag', logoutTimestamp);
-      
+
       // Use comprehensive cleanup function
       secureStorage.clearSensitiveData();
-      
+
       // Broadcast logout action
       broadcastStorageChange('logout', 'all');
-      
+
       // Remove the flag after a delay
       setTimeout(() => {
         sessionStorage.removeItem('logout_flag');
@@ -560,7 +591,7 @@ export const secureStorage = {
       sessionStorage.removeItem('secure_session');
       sessionStorage.removeItem('csrf_token');
       sessionStorage.removeItem('logout_flag');
-      
+
       Logger.info('Session data cleared');
     } catch (error) {
       Logger.error('Failed to clear sensitive data:', error);
@@ -603,13 +634,13 @@ export const secureStorage = {
   initCrossTabSync: () => {
     // Cross-tab sync removed for security - each tab manages its own state
     Logger.info('Cross-tab sync disabled for security');
-    
+
     // Return empty cleanup function
     return () => {
       // No cleanup needed
     };
   }
-}; 
+};
 
 // Initialize cached JWT from encrypted storage
 export const initializeCachedJWT = async (userId: string, userEmail: string): Promise<void> => {

@@ -1,10 +1,9 @@
 import React from 'react';
-import { ExternalLink } from 'lucide-react';
-import '../styles/BottomSection.css';
-import { useUser } from './UserContext';
+import ViewDocumentationCard from './ViewDocumentationCard';
+import { useUser } from '../contexts/userContext';
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { API_ENDPOINTS, API_BASE_URL } from '../config';
+import { API_ENDPOINTS } from '../config';
 import { secureStorage, getCurrentJWTSync } from '../utils/secureStorage';
 import { secureClipboardCopy } from '../utils/secureClipboard';
 
@@ -18,11 +17,15 @@ const BottomSection = () => {
   const [showCopied, setShowCopied] = useState(false);
 
   useEffect(() => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     async function fetchLogs() {
       setLoading(true);
       setLogs([]);
       let userId = user?.id;
-      
+
       if (userId) {
         try {
           const logsUrl = `${API_ENDPOINTS.LOGS}?user_id=${userId}&limit=10`;
@@ -45,7 +48,7 @@ const BottomSection = () => {
         }
         return;
       }
-      
+
       // Fallback: fetch API key from secure storage and fetch logs by api_key
       let key = null;
       try {
@@ -76,7 +79,7 @@ const BottomSection = () => {
         }
       }
       setApiKey(key);
-      
+
       if (key) {
         try {
           const logsUrl = `${API_ENDPOINTS.LOGS}?api_key=${key}&limit=10`;
@@ -114,12 +117,12 @@ const BottomSection = () => {
         const res = await fetch(API_ENDPOINTS.API_KEYS, {
           headers: { Authorization: `Bearer ${jwt}` }
         });
-        
+
         if (res.ok) {
           const data = await res.json();
           const serverApiKeys = Array.isArray(data) ? data : [];
           await secureStorage.setApiKeys(serverApiKeys);
-          
+
           if (serverApiKeys.length > 0) {
             await secureClipboardCopy(serverApiKeys[0].key, { isSensitive: true });
             setShowCopied(true);
@@ -152,7 +155,7 @@ const BottomSection = () => {
     if (log.model) {
       return log.model;
     }
-    
+
     // Fallback logic only if backend doesn't provide model name
     const usage = log.inference_usage_json || {};
     if (usage.model) {
@@ -161,23 +164,23 @@ const BottomSection = () => {
     if (usage.model_name) {
       return usage.model_name;
     }
-    
+
     // Check endpoint patterns for fallback
     if (log.endpoint_called?.includes('chat/completions')) return 'capx_textmodels';
     if (log.endpoint_called?.includes('completions/result')) return 'capx_ivmodels';
     if (log.endpoint_called?.includes('completions')) return 'capx_ivmodels';
-    
+
     return 'Unknown Model';
   }
   function formatType(log: any) {
     // Check inference_usage_json for actual content type
     const usage = log.inference_usage_json || {};
-    
+
     // Check for direct URLs in usage
     if (usage.image_url) return 'Image';
     if (usage.video_url) return 'Video';
     if (usage.audio_url) return 'Audio';
-    
+
     // Check for task_id which indicates async generation (image/video/audio)
     if (usage.task_id) {
       // Check endpoint to determine type
@@ -191,11 +194,11 @@ const BottomSection = () => {
         return 'Image';
       }
     }
-    
+
     // Check endpoint patterns
     if (log.endpoint?.includes('chat/completions')) return 'Text';
     if (log.endpoint?.includes('completions')) return 'Text';
-    
+
     // Default fallback
     return 'Text';
   }
@@ -272,7 +275,7 @@ const BottomSection = () => {
     </>;
     if (videoUrl) return <video src={videoUrl} style={{ width: 48, height: 48, borderRadius: 6, objectFit: 'cover' }} controls={false} muted poster="/images/DEFAULT.png" />;
     if (audioUrl) return <audio src={audioUrl} style={{ width: 48 }} controls={false} />;
-    if (loading) return <div style={{ width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span className="loader" /></div>;
+    if (loading) return <div style={{ width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="w-4 h-4 border-2 border-[#666] border-t-transparent rounded-full animate-spin" /></div>;
     if (error) return <span style={{ color: 'red', fontSize: 10 }}>{error}</span>;
     if (preview) {
       if (preview.img) return <>
@@ -286,73 +289,73 @@ const BottomSection = () => {
   }
 
   return (
-    <section className="bottom-section">
-      <div className="content-container">
-        <h2 className="section_heading">RECENT GENERATIONS</h2>
-        <p className="section_subtitle">
-          Your most recent text and image generations.
-        </p>
-        <div className="table-container">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Model Name</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Created</th>
-                <th>Tokens</th>
-                <th>Cost</th>
-                <th>Status Code</th>
-                <th>Preview</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr><td colSpan={9}>Loading...</td></tr>
-              ) : logs.length === 0 ? (
-                <tr><td colSpan={9}>No recent generations found.</td></tr>
-              ) : (
-                logs.map((log, index) => (
-                  <tr key={log.log_id || log.id || index} className={index % 2 === 0 ? 'even-row' : 'odd-row'}>
-                    <td>{`ID-${(index + 1).toString().padStart(2, '0')}`}</td>
-                    <td>{formatModel(log) || '-'}</td>
-                    <td>{formatType(log) || '-'}</td>
-                    <td className={`status ${formatStatus(log.status_code_returned).toLowerCase().replace(' ', '-')}`}>{formatStatus(log.status_code_returned) || '-'}</td>
-                    <td>{formatDate(log.timestamp) || '-'}</td>
-                    <td>{formatTokens(log.inference_usage_json) || '-'}</td>
-                    <td>{formatCost(log.cost) || '-'}</td>
-                    <td>{log.status_code_returned || '-'}</td>
-                    <td>
-                      {(log.inference_usage_json && (log.inference_usage_json.image_url || log.inference_usage_json.video_url || log.inference_usage_json.audio_url || log.inference_usage_json.task_id)) ? (
-                        <PreviewCell log={log} apiKey={apiKey} />
-                      ) : (
-                        <span style={{ color: '#888' }}>-</span>
-                      )}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+    <section className="flex flex-col items-start p-0 w-full pb-20 mb-5 md:bg-transparent bg-[#121214] md:px-0 px-4">
+      {user ? (
+        <div className="flex flex-col items-start px-4 md:px-5 pt-5 pb-0 max-w-[1200px] w-full md:w-[90%] mx-auto mt-[-40px] md:mt-[-50px] relative z-[3]">
+          <h2 className="uppercase text-white text-[24px] md:text-[32px] font-bold tracking-[1px] text-left">RECENT GENERATIONS</h2>
+          <p className="text-[14px] text-[#999999] text-left mb-2 md:max-w-[70%] max-w-full">
+            Your most recent text and image generations.
+          </p>
+          <div className="w-full max-w-[1200px] overflow-x-auto mb-4 border border-[#888] bg-black shadow-none mx-auto rounded-md">
+            <table className="w-full border-collapse bg-black text-white text-[12px] md:text-[13px] min-w-max">
+              <thead>
+                <tr>
+                  <th className="bg-black text-white font-normal text-left px-2 py-2 border-b border-[#888] text-[13px] first:pl-4">ID</th>
+                  <th className="bg-black text-white font-normal text-left px-2 py-2 border-b border-[#888] text-[13px]">Model Name</th>
+                  <th className="bg-black text-white font-normal text-left px-2 py-2 border-b border-[#888] text-[13px]">Type</th>
+                  <th className="bg-black text-white font-normal text-left px-2 py-2 border-b border-[#888] text-[13px]">Status</th>
+                  <th className="bg-black text-white font-normal text-left px-2 py-2 border-b border-[#888] text-[13px]">Created</th>
+                  <th className="bg-black text-white font-normal text-left px-2 py-2 border-b border-[#888] text-[13px] hidden lg:table-cell">Tokens</th>
+                  <th className="bg-black text-white font-normal text-left px-2 py-2 border-b border-[#888] text-[13px]">Cost</th>
+                  <th className="bg-black text-white font-normal text-left px-2 py-2 border-b border-[#888] text-[13px] hidden lg:table-cell">Status Code</th>
+                  <th className="bg-black text-white font-normal text-left px-2 py-2 border-b border-[#888] text-[13px] last:pr-4">Preview</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr className="hover:bg-[#111]"><td className="px-2 py-2 first:pl-4 text-white" colSpan={9}>Loading...</td></tr>
+                ) : logs.length === 0 ? (
+                  <tr className="hover:bg-[#111]"><td className="px-2 py-2 first:pl-4 text-white" colSpan={9}>No recent generations found.</td></tr>
+                ) : (
+                  logs.map((log, index) => (
+                    <tr key={log.log_id || log.id || index} className="hover:bg-[#111]">
+                      <td className="px-2 py-2 first:pl-4">{`ID-${(index + 1).toString().padStart(2, '0')}`}</td>
+                      <td className="px-2 py-2">{formatModel(log) || '-'}</td>
+                      <td className="px-2 py-2">{formatType(log) || '-'}</td>
+                      <td className={`px-2 py-2 text-white ${formatStatus(log.status_code_returned).toLowerCase().replace(' ', '-')}`}>{formatStatus(log.status_code_returned) || '-'}</td>
+                      <td className="px-2 py-2">{formatDate(log.timestamp) || '-'}</td>
+                      <td className="px-2 py-2 hidden lg:table-cell">{formatTokens(log.inference_usage_json) || '-'}</td>
+                      <td className="px-2 py-2">{formatCost(log.cost) || '-'}</td>
+                      <td className="px-2 py-2 hidden lg:table-cell">{log.status_code_returned || '-'}</td>
+                      <td className="px-2 py-2 last:pr-4">
+                        {(log.inference_usage_json && (log.inference_usage_json.image_url || log.inference_usage_json.video_url || log.inference_usage_json.audio_url || log.inference_usage_json.task_id)) ? (
+                          <PreviewCell log={log} apiKey={apiKey} />
+                        ) : (
+                          <span style={{ color: '#888' }}>-</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-[14px] text-[#999] text-center mb-10 md:max-w-[60%] max-w-full">
+            Only the 10 most recent generations are shown.
+          </p>
         </div>
-        <p className="table-note">
-          Only the 10 most recent generations are shown.
-        </p>
-      </div>
-      <div 
-        className="docs_box"
-        onClick={() => navigate('/docs')}
-        style={{ cursor: 'pointer' }}
-      >
-        <img src="/images/Icon.png" alt="Document Icon" className="docs-icon-img" />
-        <div className="docs-content">
-          <h3 className="docs-heading-gabriella">View Documentation</h3>
-          <p className="docs-subtitle">Learn more about how generations and logging work.</p>
+      ) : (
+        <div className="flex flex-col items-center px-4 md:px-5 pt-5 pb-0 max-w-[1200px] w-full md:w-[90%] mx-auto mt-[-40px] md:mt-[-50px] relative z-[3]">
+          <div style={{ textAlign: 'center', padding: '50px', background: '#111', border: '1px solid #333', borderRadius: '14px', marginTop: '20px', width: '100%' }}>
+            <h3 style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>View Your Recent Generations</h3>
+            <p style={{ color: '#bbb', fontSize: '16px', marginTop: '10px' }}>
+              Please log in to see your recent generations.
+            </p>
+          </div>
         </div>
-        <ExternalLink size={24} className="docs-icon" />
-      </div>
-    </section>
+      )}
+      <ViewDocumentationCard onClick={() => navigate('/docs')} />
+    </section >
   );
 };
 

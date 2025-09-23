@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Sidebar from './components/Sidebar';
-import HomePage from './components/HomePage';
-import ModelsPage from './components/ModelsPage';
-import ApiKeysPage from './components/ApiKeysPage';
-import SettingsPage from './components/SettingsPage';
-import PlaygroundPage from './components/PlaygroundPage';
-import UsagePage from './components/UsagePage';
-import DocsPage from './components/DocsPage';
+
+import HomePage from './pages/HomePage';
+import ModelsPage from './pages/ModelsPage';
+import ApiKeysPage from './pages/ApiKeysPage';
+import SettingsPage from './pages/SettingsPage';
+import PlaygroundPage from './pages/PlaygroundPage';
+import UsagePage from './pages/UsagePage';
+import DocsPage from './pages/DocsPage';
 import ErrorBoundary from './components/ErrorBoundary';
 import './styles/App.css';
+import AppLayout from './pages/AppLayout';
 
 /**
  * SECURITY NOTICE:
@@ -29,7 +30,7 @@ import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { WagmiProvider, http } from 'wagmi';
 import { mainnet, polygon, arbitrum, optimism, base, sepolia } from 'wagmi/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { UserProvider } from './components/UserContext';
+import { UserProvider } from './contexts/userContext';
 import { secureStorage } from './utils/secureStorage';
 import { initClipboardSecurity } from './utils/secureClipboard';
 import { API_ENDPOINTS } from './config';
@@ -202,24 +203,19 @@ function App() {
           <RainbowKitProvider>
             <UserProvider>
               <Router>
-                <div className="app-border-container">
-                  <div className="app">
-                    <Sidebar />
-                    <main className="main-content">
-                      <ErrorBoundary fallback={<div>Page failed to load</div>}>
-                        <Routes>
-                          <Route path="/" element={<HomePage />} />
-                          <Route path="/models" element={<ModelsPage />} />
-                          <Route path="/api-keys" element={<ApiKeysPage />} />
-                          <Route path="/settings" element={<SettingsPage />} />
-                          <Route path="/playground" element={<PlaygroundPage />} />
-                          <Route path="/usage" element={<UsagePage />} />
-                          <Route path="/docs" element={<DocsPage />} />
-                        </Routes>
-                      </ErrorBoundary>
-                    </main>
-                  </div>
-                </div>
+                <ErrorBoundary fallback={<div>Page failed to load</div>}>
+                  <Routes>
+                    <Route element={<AppLayout />}>
+                      <Route path="/" element={<HomePage />} />
+                      <Route path="/models" element={<ModelsPage />} />
+                      <Route path="/api-keys" element={<ApiKeysPage />} />
+                      <Route path="/settings" element={<SettingsPage />} />
+                      <Route path="/playground" element={<PlaygroundPage />} />
+                      <Route path="/usage" element={<UsagePage />} />
+                      <Route path="/docs" element={<DocsPage />} />
+                    </Route>
+                  </Routes>
+                </ErrorBoundary>
               </Router>
             </UserProvider>
           </RainbowKitProvider>

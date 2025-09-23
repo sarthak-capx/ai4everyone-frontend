@@ -36,10 +36,10 @@ export const API_ENDPOINTS = {
   // Auth
   WALLET_LOGIN: `${API_BASE_URL}/auth/wallet-login`,
   WALLET_CONFIG: `${API_BASE_URL}/auth/wallet-config`,
+  SESSION: `${API_BASE_URL}/auth/session`,
 
   // API Keys
   API_KEYS: `${API_BASE_URL}/api-keys`,
-
 
   // Balance
   BALANCE: `${API_BASE_URL}/balance`,

@@ -233,6 +233,7 @@
 }
 
 @media (min-width: 801px) {
+
   .mobile-sidebar-backdrop,
   .mobile-sidebar {
     display: none !important;
@@ -276,7 +277,7 @@
   right: 0;
   bottom: 0;
   height: 120px;
-  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.0) 100%);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.0) 100%);
   pointer-events: none;
   z-index: 2;
 }
@@ -505,7 +506,9 @@
 
 /* Responsive styles */
 @media (max-width: 1024px) {
-  .sub_title, .description {
+
+  .sub_title,
+  .description {
     max-width: 80%;
   }
 }
@@ -516,12 +519,12 @@
     display: flex;
     padding-top: env(safe-area-inset-top);
   }
-  
+
   .top-section {
     background-color: #121214;
 
   }
-  
+
   .banner-container {
     width: 100vw;
     height: 250px;
@@ -532,11 +535,11 @@
     align-items: center;
     justify-content: center;
   }
-  
+
   .banner-image.desktop-banner {
     display: none !important;
   }
-  
+
   .banner-image.mobile-banner {
     width: 100% !important;
     height: 100% !important;
@@ -544,7 +547,7 @@
     object-position: center !important;
     display: block !important;
   }
-  
+
   .home-content-container {
     padding: 20px 20px 20px 20px;
     margin-top: -60px;
@@ -556,7 +559,7 @@
     position: relative;
     z-index: 3;
   }
-  
+
   .mainheading {
     font-family: 'Schibsted Grotesk', Arial, sans-serif !important;
     font-size: 32px !important;
@@ -566,7 +569,7 @@
     color: #fff;
     text-align: left;
   }
-  
+
   .sub_title {
     font-size: 14px !important;
     line-height: 1.16;
@@ -575,7 +578,7 @@
 
     max-width: 100% !important;
   }
-  
+
   .description {
     font-size: 14px !important;
     line-height: 1.52;
@@ -583,26 +586,26 @@
     margin-bottom: 36px;
     max-width: 100% !important;
   }
-  
+
   .code-block-container {
     border-radius: 8px;
     overflow: hidden;
     margin-bottom: 36px;
   }
-  
+
   .code-block-header {
     padding: 12px 16px;
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
   }
-  
+
   .code-tabs {
     width: 100%;
     border-radius: 8px;
     height: auto;
   }
-  
+
   .tab {
     flex: 1;
     padding: 8px 12px;
@@ -610,20 +613,20 @@
     border-radius: 6px;
     margin-right: 0;
   }
-  
+
   .view-api-key {
     padding: 8px 16px;
     font-size: 12px;
     align-self: flex-start;
   }
-  
+
   .code-content {
     padding: 16px;
     font-size: 12px;
     max-height: 300px;
     line-height: 1.32;
   }
-  
+
   .copy-button {
     top: 12px;
     right: 12px;

@@ -161,7 +161,7 @@ class ApiClient {
 }
 
 // Global API client instance
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5050';
+import { API_BASE_URL } from '../config';
 export const apiClient = new ApiClient(API_BASE_URL);
 
 // Hook for API calls with error handling

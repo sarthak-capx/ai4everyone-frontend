@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "security:audit": "npm audit --audit-level=high",
     "security:check": "npm ls --depth=0",
-    "security:update": "npm update --save-exact"
+    "security:update": "npm update --save-exact",
+    "host": "vite --host"
   },
   "dependencies": {
     "@google/model-viewer": "4.0.0",

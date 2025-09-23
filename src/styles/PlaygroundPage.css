@@ -1,15 +1,27 @@
 /* PlaygroundPage.css */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
+  overflow: hidden;
+}
 
 /* Override main-content margin for playground page */
 .playground-page-outer {
-  position: absolute;
+  position: relative;
   top: 0;
   left: 0;
-  width: calc(100vw - 280px);
-  height: 100vh;
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
   background: #121214;
   z-index: 1;
-  margin-left: 280px;
+  margin: 0;
+  overflow: visible;
   font-family: 'Arial Rounded MT Bold', Arial, sans-serif !important;
 }
 
@@ -19,7 +31,7 @@
   width: 100%;
   background: #121214;
   position: relative;
-  margin-right: 340px;
+  margin-right: 40px;
   font-family: 'Arial Rounded MT Bold', Arial, sans-serif !important;
 }
 
@@ -33,8 +45,8 @@
   z-index: 1;
   font-family: 'Arial Rounded MT Bold', Arial, sans-serif !important;
   height: 100%;
-  overflow-y: scroll;
-  max-height: calc(100vh - 200px);
+  overflow: hidden;
+  max-height: 100%;
 }
 
 .playground-illustration {
@@ -42,12 +54,13 @@
   align-items: center;
   justify-content: center;
 }
+
 .playground-illustration img {
   width: 340px;
   height: auto;
   object-fit: contain;
   border-radius: 18px;
-  box-shadow: 0 4px 32px 0 rgba(0,0,0,0.18);
+  box-shadow: 0 4px 32px 0 rgba(0, 0, 0, 0.18);
 }
 
 .playground-model-title {
@@ -63,19 +76,16 @@
 .playground-right-panel-section {
   width: 280px;
   min-width: 280px;
-  margin-top: 16px;
-  margin-right: 20px;
-  margin-bottom: 16px;
-  height: calc(100vh - 32px);
+  margin: 0 20px 0 0;
+  height: 100%;
   background: transparent;
-  display: block;
+  display: flex;
+  flex-direction: column;
   padding: 0;
   box-sizing: border-box;
   flex-shrink: 0;
   position: relative;
   overflow: hidden;
-  border-bottom: 1px solid #333;
-  border-radius: 0px 0px 18px 0px;
   font-family: 'Arial Rounded MT Bold', Arial, sans-serif !important;
 }
 
@@ -88,17 +98,26 @@
   border-top: 1px solid #333;
   border-right: 1px solid #333;
   border-bottom: 1px solid #333;
-  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.18);
+  box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.18);
   display: flex;
   flex-direction: column;
   gap: 16px;
-  height: calc(100vh - 40px - 54px);
-  overflow-y: auto;
+  height: auto;
+  flex: 1 1 auto;
+  overflow: hidden;
   box-sizing: border-box;
-  margin-top: 0;
-  margin-bottom: 0;
-  margin-right: 0;
+  margin: 0;
   font-family: 'Arial Rounded MT Bold', Arial, sans-serif !important;
+}
+
+.playground-panel-content {
+  flex: 1 1 auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-right: 4px;
+  box-sizing: border-box;
 }
 
 .playground-panel-section {
@@ -198,6 +217,7 @@
   -webkit-appearance: none;
   transition: background 0.2s;
 }
+
 .playground-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -206,45 +226,53 @@
   border-radius: 50%;
   background: #fff;
   border: 2px solid #b7aaff;
-  box-shadow: 0 0 0 1.5px #fff, 0 2px 8px 0 rgba(183,170,255,0.18);
+  box-shadow: 0 0 0 1.5px #fff, 0 2px 8px 0 rgba(183, 170, 255, 0.18);
   cursor: pointer;
   transition: border 0.2s, box-shadow 0.2s;
 }
+
 .playground-slider:focus::-webkit-slider-thumb {
   border: 2px solid #e0b7ff;
 }
+
 .playground-slider::-moz-range-thumb {
   width: 16px;
   height: 16px;
   border-radius: 50%;
   background: #fff;
   border: 2px solid #b7aaff;
-  box-shadow: 0 0 0 1.5px #fff, 0 2px 8px 0 rgba(183,170,255,0.18);
+  box-shadow: 0 0 0 1.5px #fff, 0 2px 8px 0 rgba(183, 170, 255, 0.18);
   cursor: pointer;
   transition: border 0.2s, box-shadow 0.2s;
 }
+
 .playground-slider:focus::-moz-range-thumb {
   border: 2px solid #e0b7ff;
 }
+
 .playground-slider::-ms-thumb {
   width: 16px;
   height: 16px;
   border-radius: 50%;
   background: #fff;
   border: 2px solid #b7aaff;
-  box-shadow: 0 0 0 1.5px #fff, 0 2px 8px 0 rgba(183,170,255,0.18);
+  box-shadow: 0 0 0 1.5px #fff, 0 2px 8px 0 rgba(183, 170, 255, 0.18);
   cursor: pointer;
   transition: border 0.2s, box-shadow 0.2s;
 }
+
 .playground-slider:focus::-ms-thumb {
   border: 2px solid #e0b7ff;
 }
+
 .playground-slider::-ms-fill-lower {
   background: transparent;
 }
+
 .playground-slider::-ms-fill-upper {
   background: transparent;
 }
+
 .playground-slider:focus {
   outline: none;
 }
@@ -263,15 +291,17 @@
   border-bottom: 1px solid #333;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 32px;
+  padding: 12px 24px;
   background: transparent;
   z-index: 20;
 }
+
 .playground-topbar-left {
   display: flex;
   align-items: center;
   gap: 18px;
 }
+
 .playground-model-repo {
   display: flex;
   align-items: center;
@@ -284,6 +314,7 @@
   color: #fff;
   font-weight: 600;
 }
+
 .playground-model-logo {
   width: 30px;
   height: 20px;
@@ -294,22 +325,26 @@
   background: none;
   padding: 0;
 }
+
 .playground-model-logo img {
   width: 30px;
   height: 20px;
   display: block;
   margin: 0 auto;
 }
+
 .playground-model-repo-text {
   font-family: 'Inter', 'Orbitron', sans-serif;
   font-weight: 600;
   font-size: 15px;
   color: #fff;
 }
+
 .playground-topbar-ext {
   color: #888;
   margin-left: 2px;
 }
+
 .playground-api-view-btn {
   background: #181818;
   color: #fff;
@@ -324,14 +359,17 @@
   cursor: pointer;
   transition: background 0.2s;
 }
+
 .playground-api-view-btn:hover {
   background: #232323;
 }
+
 .playground-topbar-right {
   display: flex;
   align-items: center;
   gap: 10px;
 }
+
 .playground-topbar-icon {
   background: #181818;
   border: 1px solid #333;
@@ -343,6 +381,7 @@
   display: flex;
   align-items: center;
 }
+
 .playground-topbar-icon:hover {
   background: #232323;
 }
@@ -357,16 +396,11 @@
 
 /* Chat Bar */
 .playground-chat-history {
-  flex: 1 1 0%;
   width: 100%;
-  overflow-y: auto;
   padding-bottom: 12px;
-  min-height: 0;
-  height: 100%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
 }
 
 .playground-chatbar-outer {
@@ -375,7 +409,7 @@
   z-index: 30;
   display: flex;
   justify-content: center;
-  padding: 18px 32px;
+  padding: 12px 24px;
   position: relative;
   bottom: 0;
   left: 0;
@@ -427,10 +461,12 @@
   cursor: pointer;
   transition: background 0.2s;
 }
+
 .playground-chatbar-send img {
   width: 18px;
   height: 18px;
 }
+
 .playground-chatbar-send:hover {
   background: #eaeaea;
 }
@@ -442,11 +478,13 @@
   margin-left: 4px;
   cursor: pointer;
 }
+
 .playground-slider-row {
   display: flex;
   align-items: center;
   gap: 10px;
 }
+
 .playground-slider-desc {
   color: #888;
   font-size: 10px;
@@ -470,12 +508,13 @@
   flex-direction: column;
   align-items: stretch;
   justify-content: stretch;
-  margin-top: 16px;
-  margin-bottom: 16px;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
   border: 1px solid #333;
   min-width: 0;
   background: #121212;
-  overflow: visible;
+  overflow: hidden;
   font-family: 'Arial Rounded MT Bold', Arial, sans-serif !important;
 }
 
@@ -507,6 +546,7 @@
   border-radius: 12px;
   transition: background 0.2s;
 }
+
 .playground-panel-settings-btn:hover {
   background: #232323;
 }
@@ -518,7 +558,6 @@
   background: #000000;
   border-top: 1px solid #333;
   border-right: 1px solid #333;
-  border-left: 1px solid #333;
   border-radius: 0px 18px 0 0;
   display: flex;
   align-items: center;
@@ -542,11 +581,13 @@
   box-sizing: border-box;
   transition: background 0.2s, border-color 0.2s;
 }
+
 .playground-panel-settings-icon img {
   width: 18px;
   height: 18px;
   display: block;
 }
+
 .playground-panel-settings-btn:hover .playground-panel-settings-icon {
   background: #222;
   border-color: #bbb;
@@ -560,7 +601,7 @@
     margin-left: 0;
     background: #121214;
   }
-  
+
   /* Hide all desktop playground elements */
   .playground-flex-layout,
   .playground-main-section,
@@ -574,7 +615,7 @@
   .mobile-sidebar-backdrop {
     display: none !important;
   }
-  
+
   /* Show only mobile playground view */
   .mobile-playground-view {
     display: flex !important;
@@ -589,16 +630,18 @@
     left: 0;
     z-index: 9999;
   }
-  
+
   .desktop-playground-view {
     display: none !important;
   }
 }
+
 @media (max-width: 700px) {
   /* This breakpoint is now handled by the 1100px breakpoint above */
 }
 
-.playground-model-title, .playground-model-repo-text {
+.playground-model-title,
+.playground-model-repo-text {
   font-family: 'Arial Rounded MT Bold', Arial, sans-serif !important;
   font-weight: 400;
 }
@@ -610,6 +653,8 @@
 
 .desktop-playground-view {
   display: block;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .mobile-playground-card {
@@ -708,4 +753,4 @@
 .custom-chain-dropdown-menu {
   background: #121212 !important;
   font-size: 13px !important;
-} 
+}
