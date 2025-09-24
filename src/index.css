@@ -1,3 +1,89 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Hide all scrollbars while maintaining functionality */
+* {
+  /* Webkit browsers (Chrome, Safari, Edge) */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* Webkit browsers */
+  width: 0;
+  height: 0;
+}
+
+*::-webkit-scrollbar-track {
+  display: none;
+}
+
+*::-webkit-scrollbar-thumb {
+  display: none;
+}
+
+*::-webkit-scrollbar-corner {
+  display: none;
+}
+
+/* Apply to all common scrollable elements */
+html, body, div, main, section, article, aside, nav, ul, ol, li,
+pre, code, textarea, input, select, iframe, canvas {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+div::-webkit-scrollbar,
+main::-webkit-scrollbar,
+section::-webkit-scrollbar,
+article::-webkit-scrollbar,
+aside::-webkit-scrollbar,
+nav::-webkit-scrollbar,
+ul::-webkit-scrollbar,
+ol::-webkit-scrollbar,
+li::-webkit-scrollbar,
+pre::-webkit-scrollbar,
+code::-webkit-scrollbar,
+textarea::-webkit-scrollbar,
+input::-webkit-scrollbar,
+select::-webkit-scrollbar,
+iframe::-webkit-scrollbar,
+canvas::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Fix mobile scrolling issues */
+html, body {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  height: auto !important;
+  min-height: 100vh !important;
+}
+
+/* Ensure app container allows scrolling on mobile */
+@media (max-width: 768px) {
+  html, body {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: auto !important;
+    min-height: 100vh !important;
+  }
+
+  .app {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: auto !important;
+    min-height: 100vh !important;
+  }
+
+  main {
+    height: auto !important;
+    min-height: auto !important;
+    overflow-y: visible !important;
+  }
+}

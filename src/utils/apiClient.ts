@@ -71,25 +71,26 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
-    
+
     const requestFn = async (): Promise<T> => {
       try {
         // Get JWT from secure storage (now async)
         const jwt = await getCurrentJWT();
-        
+
         const headers: Record<string, string> = {
           ...this.defaultHeaders,
           ...(options.headers as Record<string, string>),
         };
-        
+
         // Add Authorization header if JWT is available
         if (jwt) {
           headers['Authorization'] = `Bearer ${jwt}`;
         }
-        
+
         const response = await fetch(url, {
           ...options,
           headers,
+          credentials: options.credentials || 'omit',  // Default to 'omit' for security
         });
 
         if (!response.ok) {
@@ -114,19 +115,19 @@ class ApiClient {
         if (contentType && contentType.includes('application/json')) {
           return await response.json();
         }
-        
+
         // For non-JSON responses, return text
         return await response.text() as T;
       } catch (error) {
         if (error instanceof ApiError) {
           throw error;
         }
-        
+
         // Network errors
         if (error instanceof TypeError) {
           throw new ApiError(0, 'Network error or server unavailable');
         }
-        
+
         throw new ApiError(0, 'An unexpected error occurred');
       }
     };
@@ -134,16 +135,17 @@ class ApiClient {
     return this.retryRequest(requestFn);
   }
 
-  // Convenience methods
-  async get<T>(endpoint: string, headers?: Record<string, string>): Promise<T> {
-    return this.request<T>(endpoint, { method: 'GET', headers });
+  // Convenience methods - add credentials support
+  async get<T>(endpoint: string, headers?: Record<string, string>, credentials?: RequestCredentials): Promise<T> {
+    return this.request<T>(endpoint, { method: 'GET', headers, credentials });
   }
 
-  async post<T>(endpoint: string, data?: any, headers?: Record<string, string>): Promise<T> {
+  async post<T>(endpoint: string, data?: any, headers?: Record<string, string>, credentials?: RequestCredentials): Promise<T> {
     return this.request<T>(endpoint, {
       method: 'POST',
       headers,
       body: data ? JSON.stringify(data) : undefined,
+      credentials,
     });
   }
 
@@ -170,21 +172,21 @@ import { useState, useCallback } from 'react';
 export const useApiCall = <T>() => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
-  
+
   const call = useCallback(async (
     endpoint: string,
     options?: RequestInit
   ): Promise<T | null> => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const result = await apiClient.request<T>(endpoint, options);
       return result;
     } catch (error) {
       if (error instanceof ApiError) {
         setError(error);
-        
+
         // Handle specific error codes
         switch (error.status) {
           case 401:
@@ -214,18 +216,18 @@ export const useApiCall = <T>() => {
       setLoading(false);
     }
   }, []);
-  
+
   const clearError = useCallback(() => {
     setError(null);
   }, []);
-  
+
   return { call, loading, error, clearError };
 };
 
 // Utility function to get user-friendly error messages
 export const getErrorMessage = (error: ApiError | null): string => {
   if (!error) return '';
-  
+
   switch (error.status) {
     case 0:
       return 'Network error. Please check your connection and try again.';

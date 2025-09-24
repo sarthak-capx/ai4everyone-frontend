@@ -123,72 +123,72 @@ const MobileNav = () => {
                 </div>
 
                 {/* Navigation */}
-                <nav className="flex-1 p-0 overflow-y-auto" role="menu">
-                    <div
-                        className={`${navItemBase} ${isActive('/') ? navActive : ''}`}
-                        role="menuitem"
+                <nav className="flex-1 p-0 overflow-y-auto" role="navigation" aria-label="Main navigation">
+                    <button
+                        className={`${navItemBase} ${isActive('/') ? navActive : ''} w-full text-left`}
                         onClick={() => handleNavigation('/')}
+                        aria-current={isActive('/') ? 'page' : undefined}
                     >
                         <Home size={18} />
                         <span>Home</span>
-                    </div>
+                    </button>
 
-                    <div
-                        className={`${navItemBase} ${isActive('/models') ? navActive : ''}`}
-                        role="menuitem"
+                    <button
+                        className={`${navItemBase} ${isActive('/models') ? navActive : ''} w-full text-left`}
                         onClick={() => handleNavigation('/models')}
+                        aria-current={isActive('/models') ? 'page' : undefined}
                     >
                         <Box size={18} />
                         <span>Models</span>
-                    </div>
+                    </button>
 
-                    <div
-                        className={`${navItemBase} ${isActive('/playground') ? navActive : ''}`}
-                        role="menuitem"
+                    <button
+                        className={`${navItemBase} ${isActive('/playground') ? navActive : ''} w-full text-left`}
                         onClick={() => handleNavigation('/playground')}
+                        aria-current={isActive('/playground') ? 'page' : undefined}
                     >
                         <Cpu size={18} />
                         <span>Playground</span>
-                    </div>
+                    </button>
 
-                    <div
-                        className={`${navItemBase} ${isActive('/usage') ? navActive : ''}`}
-                        role="menuitem"
+                    <button
+                        className={`${navItemBase} ${isActive('/usage') ? navActive : ''} w-full text-left`}
                         onClick={() => handleNavigation('/usage')}
+                        aria-current={isActive('/usage') ? 'page' : undefined}
                     >
                         <BarChart2 size={18} />
                         <span>Usage</span>
-                    </div>
+                    </button>
 
-                    <div
-                        className={`${navItemBase} ${isActive('/api-keys') ? navActive : ''}`}
-                        role="menuitem"
+                    <button
+                        className={`${navItemBase} ${isActive('/api-keys') ? navActive : ''} w-full text-left`}
                         onClick={() => handleNavigation('/api-keys')}
+                        aria-current={isActive('/api-keys') ? 'page' : undefined}
                     >
                         <Key size={18} />
                         <span>API Keys</span>
-                    </div>
+                    </button>
 
-                    <div
-                        className={`${navItemBase} ${isActive('/settings') ? navActive : ''}`}
-                        role="menuitem"
+                    <button
+                        className={`${navItemBase} ${isActive('/settings') ? navActive : ''} w-full text-left`}
                         onClick={() => handleNavigation('/settings')}
+                        aria-current={isActive('/settings') ? 'page' : undefined}
                     >
                         <Settings size={18} />
                         <span>Settings</span>
-                    </div>
+                    </button>
 
-                    <div
-                        className={`${navItemBase} ${isActive('/docs') ? navActive : ''} bg-black border border-[#383940] rounded-[12px] mx-2 my-3 justify-between text-white`}
-                        role="menuitem"
+                    <button
+                        className={`${navItemBase} ${isActive('/docs') ? navActive : ''} bg-black border border-[#383940] rounded-[12px] mx-2 my-3 justify-between text-white w-full text-left`}
                         onClick={() => handleNavigation('/docs')}
+                        aria-current={isActive('/docs') ? 'page' : undefined}
                     >
                         <div className="flex items-center gap-[11px]">
                             <FileText size={18} />
                             <span>Docs</span>
                         </div>
                         <ExternalLink size={14} className="text-[#9B9797]" />
-                    </div>
+                    </button>
                 </nav>
 
                 {/* Footer */}

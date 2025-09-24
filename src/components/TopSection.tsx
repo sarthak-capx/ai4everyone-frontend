@@ -42,7 +42,7 @@ const TopSection = () => {
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[120px] bg-gradient-to-t from-black/80 to-transparent z-[2]"></div>
       </div>
 
-      <div className="flex flex-col items-start max-w-[1200px] md:w-[90%] w-full mx-auto md:mt-[-35px] relative z-[3] px-4 md:px-0 md:bg-transparent bg-[#121214]">
+      <div className="flex flex-col items-start w-full max-w-full mx-auto md:mt-[-35px] relative z-[3] px-4 md:px-6 lg:px-8 md:bg-transparent bg-[#121214]">
         <h1 className="font-black text-[36px] text-white"><span className="text-[40px]">Welcome to</span><br />UNSTOPPABLE</h1>
 
         <p className="text-sm md:text-base text-[#999999] text-left mb-4 w-full">
@@ -91,7 +91,7 @@ const TopSection = () => {
             </div>
           </div>
 
-          <div className="p-4 md:p-5 relative max-h-[320px] md:max-h-[500px] overflow-y-auto bg-black font-mono text-[12px] md:text-[13px] leading-[1.5] max-w-[1200px] w-full mx-auto">
+          <div className="p-4 md:p-5 relative max-h-[320px] md:max-h-[500px] overflow-y-auto overflow-x-auto bg-black font-mono text-[12px] md:text-[13px] leading-[1.5] w-full">
             {activeTab === 'TypeScript' && (
               <>
                 <Highlight
@@ -100,7 +100,7 @@ const TopSection = () => {
                   theme={themes.vsDark}
                 >
                   {({ className, style, tokens, getLineProps, getTokenProps }) => (
-                    <pre className={className} style={{ ...style, background: '#000', fontSize: 13, margin: 0, padding: '20px' }}>
+                    <pre className={className} style={{ ...style, background: '#000', fontSize: 13, margin: 0, padding: '20px', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
                       {tokens.map((line, i) => (
                         <div key={i} {...getLineProps({ line, key: i })}>
                           {line.map((token, key) => (
@@ -121,7 +121,7 @@ const TopSection = () => {
                   theme={themes.vsDark}
                 >
                   {({ className, style, tokens, getLineProps, getTokenProps }) => (
-                    <pre className={className} style={{ ...style, background: '#000', fontSize: 13, margin: 0, padding: '20px' }}>
+                    <pre className={className} style={{ ...style, background: '#000', fontSize: 13, margin: 0, padding: '20px', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
                       {tokens.map((line, i) => (
                         <div key={i} {...getLineProps({ line, key: i })}>
                           {line.map((token, key) => (
@@ -142,7 +142,7 @@ const TopSection = () => {
                   theme={themes.vsDark}
                 >
                   {({ className, style, tokens, getLineProps, getTokenProps }) => (
-                    <pre className={className} style={{ ...style, background: '#000', fontSize: 13, margin: 0, padding: '20px' }}>
+                    <pre className={className} style={{ ...style, background: '#000', fontSize: 13, margin: 0, padding: '20px', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
                       {tokens.map((line, i) => (
                         <div key={i} {...getLineProps({ line, key: i })}>
                           {line.map((token, key) => (

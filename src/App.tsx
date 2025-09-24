@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import HomePage from './pages/HomePage';
@@ -12,47 +11,15 @@ import ErrorBoundary from './components/ErrorBoundary';
 import './styles/App.css';
 import AppLayout from './pages/AppLayout';
 
-/**
- * SECURITY NOTICE:
- * This application implements comprehensive package integrity validation
- * to prevent supply chain attacks and third-party script tampering.
- * 
- * Security measures implemented:
- * - Package integrity validation on startup
- * - Continuous runtime monitoring for function tampering
- * - Exact version pinning for all dependencies
- * - Suspicious function detection
- * - Network request pattern analysis
- */
-// Load third-party styles with security considerations
 import '@rainbow-me/rainbowkit/styles.css';
 import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { WagmiProvider, http } from 'wagmi';
 import { mainnet, polygon, arbitrum, optimism, base, sepolia } from 'wagmi/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { UserProvider } from './contexts/userContext';
-import { secureStorage } from './utils/secureStorage';
 import { initClipboardSecurity } from './utils/secureClipboard';
 import { API_ENDPOINTS } from './config';
 
-// Package integrity validation
-const PACKAGE_INTEGRITY_CHECKS = {
-  '@rainbow-me/rainbowkit': {
-    version: '2.2.8',
-    criticalFunctions: ['getDefaultConfig', 'RainbowKitProvider'],
-    expectedHash: 'sha384-rainbowkit-integrity-hash' // Placeholder - should be actual hash
-  },
-  'wagmi': {
-    version: '2.15.6',
-    criticalFunctions: ['WagmiProvider', 'http'],
-    expectedHash: 'sha384-wagmi-integrity-hash' // Placeholder - should be actual hash
-  }
-};
-
-// Remove static config - will be created dynamically
-const queryClient = new QueryClient();
-
-// Package integrity validation function
 const validatePackageIntegrity = () => {
   const errors: string[] = [];
 
@@ -128,77 +95,30 @@ const validatePackageIntegrity = () => {
   console.log('Package integrity validation passed');
 };
 
-function App() {
-  const [walletConfig, setWalletConfig] = useState<any>(null);
-  const [configError, setConfigError] = useState<string | null>(null);
-
-  // Fetch wallet configuration from backend at runtime
-  useEffect(() => {
-    const fetchWalletConfig = async () => {
-      try {
-        const response = await fetch(API_ENDPOINTS.WALLET_CONFIG);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch wallet config: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        // Create WalletConnect config with project ID from backend
-        const config = getDefaultConfig({
-          appName: data.appName || 'AI4EVERYONE',
-          projectId: data.projectId,
-          chains: [mainnet, polygon, arbitrum, optimism, base, sepolia],
-          transports: {
-            [mainnet.id]: http(),
-            [polygon.id]: http(),
-            [arbitrum.id]: http(),
-            [optimism.id]: http(),
-            [base.id]: http(),
-            [sepolia.id]: http(),
-          },
-        });
-
-        setWalletConfig(config);
-      } catch (error) {
-        console.error('Failed to load wallet configuration:', error);
-        setConfigError(error instanceof Error ? error.message : 'Unknown error');
-      }
-    };
-
-    fetchWalletConfig();
-  }, []);
-
-  // Initialize security features on app startup
-  useEffect(() => {
-    try {
-      validatePackageIntegrity();
-      initClipboardSecurity();
-      // Initialization marker removed; secureStorage has no setItem API
-    } catch (error) {
-      console.error('Security initialization failed:', error);
-    }
-  }, []);
-
-  if (!walletConfig) {
-    return (
-      <div className="loading-state">
-        Loading configuration...
-        {configError && (
-          <>
-            <br />
-            <span className="error-text">{configError}</span>
-          </>
-        )}
-      </div>
-    );
+const config = getDefaultConfig({
+  appName: 'AI4EVERYONE',
+  projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID,
+  chains: [mainnet, polygon, arbitrum, optimism, base, sepolia],
+  transports: {
+    [mainnet.id]: http(),
+    [polygon.id]: http(),
+    [arbitrum.id]: http(),
+    [optimism.id]: http(),
+    [base.id]: http(),
+    [sepolia.id]: http()
   }
+})
+
+const queryClient = new QueryClient();
+
+function App() {
 
   return (
     <ErrorBoundary onError={(error, errorInfo) => {
       // Send to monitoring service
       console.error('App error:', error, errorInfo);
     }}>
-      <WagmiProvider config={walletConfig}>
+      <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
           <RainbowKitProvider>
             <UserProvider>

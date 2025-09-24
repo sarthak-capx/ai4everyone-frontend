@@ -11,7 +11,7 @@ export default function AppLayout() {
             </div>
 
             {/* Shell */}
-            <div className="flex h-[calc(100vh)] overflow-hidden">
+            <div className="flex md:h-[calc(100vh)] min-h-screen md:overflow-hidden">
                 {/* Sidebar fixed height (md and up) */}
                 <div className="hidden md:block flex-shrink-0 my-4 ml-4">
                     <div className="h-[calc(100vh-32px)]">
@@ -20,7 +20,7 @@ export default function AppLayout() {
                 </div>
 
                 {/* Content pane scrolls and matches vertical box */}
-                <main className="flex-1 my-4 mr-4 h-[calc(100vh-32px)] overflow-y-auto">
+                <main className="flex-1 md:my-4 md:mr-4 md:h-[calc(100vh-32px)] md:overflow-y-auto overflow-x-hidden w-full">
                     <Outlet />
                 </main>
             </div>

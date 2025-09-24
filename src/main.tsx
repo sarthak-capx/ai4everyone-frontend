@@ -14,18 +14,18 @@ const initializeApp = () => {
   // Check browser compatibility (simplified)
   const isCompatible = checkBrowserSecurity();
   const errors = getCompatibilityErrors();
-  
+
   // Only show error screen if there are critical errors
   const criticalErrors = errors.filter(error => error.severity === 'critical');
-  
+
   if (criticalErrors.length > 0) {
     // Show browser compatibility error for critical issues
     const container = document.getElementById('root');
-    
+
     if (container) {
       const root = createRoot(container);
       root.render(
-        <BrowserCompatibilityErrorComponent 
+        <BrowserCompatibilityErrorComponent
           errors={errors}
           onContinue={() => {
             // User chose to continue anyway - start the app
@@ -40,7 +40,7 @@ const initializeApp = () => {
     }
     return;
   }
-  
+
   // Start the app normally (even with warnings)
   startApp();
 };

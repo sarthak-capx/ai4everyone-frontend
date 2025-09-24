@@ -363,14 +363,65 @@ const SettingsPage = React.memo(() => {
                 <h1 className="settings-header">Settings</h1>
                 <p className="settings-desc">Manage your account, balance, and payment options here.</p>
 
-                {/* Account Info Card Only */}
+                {/* Account Info Card or Connect Wallet Prompt */}
                 <div className="settings-cards-row">
-                    {/* Account Info Card */}
-                    <div className="settings-account-card">
-                        <div className="settings-card-title">Account information</div>
-                        <div className="settings-card-content">Name: <span style={{ fontWeight: 700 }}>{getDisplayName(user)}</span></div>
-                        <div className="settings-card-content">User ID: <span style={{ fontWeight: 700 }}>{user?.id ? `${user.id.slice(0, 8)}...` : '-'}</span></div>
-                    </div>
+                    {user ? (
+                        <div className="settings-account-card">
+                            <div className="settings-card-title">Account information</div>
+                            <div className="settings-card-content">Name: <span style={{ fontWeight: 700 }}>{getDisplayName(user)}</span></div>
+                            <div className="settings-card-content">User ID: <span style={{ fontWeight: 700 }}>{user?.id ? `${user.id.slice(0, 8)}...` : '-'}</span></div>
+                        </div>
+                    ) : (
+                        <div className="settings-account-card" style={{
+                            background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+                            border: '2px solid #2c3e50',
+                            textAlign: 'center',
+                            padding: '40px 32px'
+                        }}>
+                            <div style={{
+                                fontSize: '24px',
+                                fontWeight: '700',
+                                color: '#fff',
+                                marginBottom: '12px',
+                                fontFamily: 'Schibsted Grotesk'
+                            }}>
+                                Connect Your Wallet
+                            </div>
+                            <div style={{
+                                color: '#bbb',
+                                fontSize: '15px',
+                                marginBottom: '24px',
+                                lineHeight: '1.5'
+                            }}>
+                                Sign in with your crypto wallet to access your account settings, view balance, and manage payment methods.
+                            </div>
+                            <button
+                                onClick={() => openConnectModal && openConnectModal()}
+                                style={{
+                                    background: 'linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%)',
+                                    color: '#fff',
+                                    border: 'none',
+                                    borderRadius: '12px',
+                                    padding: '14px 32px',
+                                    fontSize: '16px',
+                                    fontWeight: '600',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s ease',
+                                    boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
+                                }}
+                                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                    e.currentTarget.style.boxShadow = '0 6px 16px rgba(59, 130, 246, 0.4)';
+                                }}
+                                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+                                    e.currentTarget.style.transform = 'translateY(0px)';
+                                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.3)';
+                                }}
+                            >
+                                Connect Wallet to Continue
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {/* Billing Header */}
@@ -398,7 +449,10 @@ const SettingsPage = React.memo(() => {
                         <div style={{ color: '#bbb', fontSize: 13, marginBottom: 18 }}>
                             Enable automatic top-ups to maintain uninterrupted access. When your balance drops to zero, a pre-configured top-up amount will be charged.
                         </div>
-                        <button style={{ background: '#fff', color: '#181818', fontWeight: 700, fontSize: 28, borderRadius: 10, border: 'none', padding: '12px 28px', cursor: 'not-allowed', marginTop: 'auto', minWidth: 120, width: '60%' }}>
+                        <button
+                            className="w-full bg-gray-800 text-white py-3 px-6 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px]"
+                            disabled={true}
+                        >
                             Coming Soon
                         </button>
                     </div>

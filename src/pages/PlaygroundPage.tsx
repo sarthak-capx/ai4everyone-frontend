@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../styles/PlaygroundPage.css';
 import '../styles/TopSection.css';
-import { ChevronDown, ExternalLink, Home, Box, Cpu, BarChart2, Key, Settings, FileText, LogOut } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { MODEL_OPTIONS } from '../models';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { API_ENDPOINTS } from '../config';
@@ -76,50 +76,39 @@ function ModelDropdown({ models, selectedModel, setSelectedModelAndNavigate, dis
 
     return (
         <div
-            className="custom-chain-dropdown"
+            className={`relative w-full ${disabled ? 'opacity-50 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
             tabIndex={0}
             ref={dropdownRef}
             onKeyDown={disabled ? undefined : handleKeyDown}
-            style={{ position: 'relative', width: '100%', opacity: disabled ? 0.5 : 1, pointerEvents: disabled ? 'none' : 'auto' }}
+            role="combobox"
+            aria-expanded={open}
+            aria-haspopup="listbox"
+            aria-label="Select model"
         >
+            {/* Selected Item - Exactly matching playground-dropdown class */}
             <div
-                className="custom-chain-dropdown-selected"
+                className={`playground-dropdown relative cursor-pointer transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-30 ${disabled ? 'cursor-not-allowed opacity-50' : 'hover:bg-[#23272a]'}`}
                 onClick={disabled ? undefined : () => setOpen(o => !o)}
-                style={{
-                    background: '#1A1D21',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: 8,
-                    padding: '12px',
-                    cursor: disabled ? 'not-allowed' : 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    minHeight: 40,
-                }}
+                role="button"
+                aria-label={selected?.label || 'Select model'}
             >
-                <span>{selected?.label || 'Select model'}</span>
-                <span style={{ marginLeft: 8, fontSize: 18, userSelect: 'none' }}>▼</span>
+                <span className="truncate block px-3 py-3">{selected?.label || 'Select model'}</span>
+                {/* Arrow Icon - Positioned like in static dropdowns but rotatable */}
+                <span
+                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-lg select-none transition-transform duration-200 pointer-events-none ${open ? 'rotate-180' : ''}`}
+                    aria-hidden="true"
+                >
+                    ▼
+                </span>
             </div>
+
+            {/* Dropdown Menu - Matching border and background */}
             {open && (
                 <div
-                    className="custom-chain-dropdown-menu"
-                    style={{
-                        position: 'absolute',
-                        top: '110%',
-                        left: 0,
-                        right: 0,
-                        background: '#1A1D21',
-                        color: 'white',
-                        borderRadius: 8,
-                        boxShadow: '0 4px 16px #0008',
-                        zIndex: 1000,
-                        border: '1px solid #444',
-                        overflow: 'hidden',
-                        maxHeight: 320,
-                        overflowY: 'auto',
-                    }}
+                    className="absolute top-full left-0 right-0 mt-1 bg-[#1A1D21] border border-gray-600 rounded-lg shadow-sm z-50 max-h-80 overflow-y-auto transition-all duration-200 ease-in-out"
+                    role="listbox"
                 >
+                    {/* Search Input - Matching input styles */}
                     <input
                         type="text"
                         placeholder="Search models..."
@@ -132,45 +121,42 @@ function ModelDropdown({ models, selectedModel, setSelectedModelAndNavigate, dis
                             }
                         }}
                         maxLength={100} // HTML attribute for additional protection
-                        style={{
-                            width: '100%',
-                            padding: '8px 12px',
-                            border: 'none',
-                            outline: 'none',
-                            background: '#23232a',
-                            color: '#fff',
-                            fontSize: 15,
-                            borderBottom: '1px solid #333',
-                            marginBottom: 4,
-                        }}
+                        className="w-full px-3 py-2 border-none outline-none bg-[#23272a] text-white text-sm placeholder-gray-400 border-b border-gray-600 focus:border-blue-600 focus:border-b-2 focus:border-opacity-50 transition-all duration-200"
+                        role="searchbox"
+                        aria-label="Search models"
                     />
-                    {filteredModels.map((model: ModelOption) => (
-                        <div
-                            key={model.value}
-                            className="custom-chain-dropdown-option"
-                            onClick={() => {
-                                setSelectedModelAndNavigate(model.value);
-                                setOpen(false);
-                                setSearch('');
-                            }}
-                            style={{
-                                padding: '12px',
-                                cursor: 'pointer',
-                                background: model.value === selectedModel ? '#2a2d30' : 'transparent',
-                                fontWeight: model.value === selectedModel ? 600 : 400,
-                            }}
-                            tabIndex={0}
-                            onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                    setSelectedModelAndNavigate(model.value);
-                                    setOpen(false);
-                                    setSearch('');
-                                }
-                            }}
-                        >
-                            {model.label}
-                        </div>
-                    ))}
+
+                    {/* Options */}
+                    <div className="py-1">
+                        {filteredModels.length > 0 ? (
+                            filteredModels.map((model: ModelOption) => (
+                                <div
+                                    key={model.value}
+                                    className={`px-3 py-2 cursor-pointer text-sm transition-all duration-200 ease-in-out hover:bg-gray-700 hover:text-white focus:outline-none focus:bg-gray-700 focus:text-white rounded-md ${model.value === selectedModel ? 'bg-gray-700 text-white font-semibold' : 'text-gray-300'
+                                        }`}
+                                    onClick={() => {
+                                        setSelectedModelAndNavigate(model.value);
+                                        setOpen(false);
+                                        setSearch('');
+                                    }}
+                                    role="option"
+                                    aria-selected={model.value === selectedModel}
+                                    tabIndex={0}
+                                    onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                            setSelectedModelAndNavigate(model.value);
+                                            setOpen(false);
+                                            setSearch('');
+                                        }
+                                    }}
+                                >
+                                    {model.label}
+                                </div>
+                            ))
+                        ) : (
+                            <div className="px-3 py-2 text-gray-400 text-sm italic">No models found</div>
+                        )}
+                    </div>
                 </div>
             )}
         </div>
@@ -180,12 +166,15 @@ function ModelDropdown({ models, selectedModel, setSelectedModelAndNavigate, dis
 const PlaygroundPage = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { user, setUser } = useUser();
-    const { disconnect } = useDisconnect();
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const { user } = useUser();
     const [outputLength, setOutputLength] = useState(2048);
     const [temperature, setTemperature] = useState(1);
-    const [selectedModel, setSelectedModel] = useState(MODEL_OPTIONS[0].value);
+    const playgroundModels = MODEL_OPTIONS.filter((model) => {
+        const match = model.label.match(/\s*\(([^)]+)\)$/);
+        const category = match ? match[1] : '';
+        return category === 'Text' || category === 'Image';
+    });
+    const [selectedModel, setSelectedModel] = useState(playgroundModels[0]?.value || '');
     const [chatHistory, setChatHistory] = useState<{ role: 'user' | 'model', content: string }[]>([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
@@ -209,7 +198,6 @@ const PlaygroundPage = () => {
     const multiImageFileInputRef = useRef<HTMLInputElement>(null);
     const videoFileInputRef = useRef<HTMLInputElement>(null);
     const multiVideoFileInputRef = useRef<HTMLInputElement>(null);
-    const { openConnectModal } = useConnectModal();
 
     useEffect(() => {
         // Repopulate API key cache and balance if missing
@@ -246,37 +234,17 @@ const PlaygroundPage = () => {
         // Existing code for modelFromUrl
         const params = new URLSearchParams(location.search);
         const modelFromUrl = params.get('model');
-        if (modelFromUrl && MODEL_OPTIONS.some(m => m.value === modelFromUrl)) {
+        if (modelFromUrl && playgroundModels.some(m => m.value === modelFromUrl)) {
             setSelectedModel(modelFromUrl);
         }
     }, [location, user?.id, user?.email]);
 
-    // Toggle mobile menu
-    const toggleMobileMenu = () => {
-        setMobileMenuOpen(!mobileMenuOpen);
-    };
-
     // Handle navigation
     const handleNavigation = (path: string) => {
-        // 🔒 SECURITY: Use safe navigation with validation
-        if (safeNavigate(navigate, path)) {
-            setMobileMenuOpen(false);
-        }
+        safeNavigate(navigate, path);
     };
 
-    // Check if route is active  
-    const isActive = (path: string) => location.pathname === path;
-
-    // Handle logout
-    const handleLogout = () => {
-        setUser(null);
-        // Use secure logout with cross-tab synchronization
-        secureStorage.secureLogout();
-        try { disconnect(); } catch { }
-        setMobileMenuOpen(false);
-    };
-
-    const selectedModelObj = MODEL_OPTIONS.find(m => m.value === selectedModel);
+    const selectedModelObj = playgroundModels.find(m => m.value === selectedModel);
 
     const getResponseFormat = () => {
         if (!selectedModelObj?.label) return 'Unknown';
@@ -2866,10 +2834,8 @@ const PlaygroundPage = () => {
                     generatingMsg = 'Generating image...';
                 } else if (selectedModelObj?.label.includes('(Audio)')) {
                     generatingMsg = 'Generating audio...';
-                } else if (selectedModelObj?.label.includes('(Image-to-3D)')) {
-                    generatingMsg = 'Generating 3D model...';
                 }
-                setChatHistory(prev => [...prev, { role: 'model', content: generatingMsg }]);
+
                 try {
                     // 1. Submit the generation request
                     const submitRes = await fetch(url, {
@@ -3174,163 +3140,20 @@ const PlaygroundPage = () => {
     }, [user?.id]);
 
     return (
-        <div className="playground-page-outer">
-            {/* Mobile Header */}
-            <div className="mobile-header">
-                <div className="mobile-logo">
-                    <img
-                        src="/images/logo.png"
-                        alt="Logo"
-                        className="logo-img"
-                    />
-                </div>
-                <div className="mobile-menu-icon" onClick={toggleMobileMenu}>
-                    <img
-                        src="/images/menu_alt_02.png"
-                        alt="Menu"
-                        className="menu-icon-img"
-                    />
-                </div>
-            </div>
-
-            {/* Mobile Sidebar Overlay */}
-            {mobileMenuOpen && (
-                <>
-                    {/* Backdrop */}
-                    <div className="mobile-sidebar-backdrop" onClick={toggleMobileMenu}></div>
-
-                    {/* Mobile Sidebar */}
-                    <div className="mobile-sidebar">
-                        {/* Header */}
-                        <div className="mobile-sidebar-header">
-                            <img src="/images/logo.png" alt="UNSTOPPABLE" className="mobile-sidebar-logo" />
+        <div className="w-full h-full min-h-0">
+            {/* Mobile view */}
+            <div className="md:hidden flex items-center justify-center min-h-screen p-5">
+                <div className="bg-[#121214] border border-[#4A4A4A] rounded-2xl w-[350px] max-w-[calc(100vw-40px)]">
+                    <div className="p-6 flex flex-col gap-6 items-start text-left">
+                        <div className="w-[32.5px] h-[32.5px] flex items-center justify-center">
+                            <img src="/images/playground-union-icon.svg" alt="Playground" className="w-8 h-8" />
                         </div>
-
-                        {/* Navigation */}
-                        <nav className="mobile-sidebar-nav">
-                            <div
-                                className={`mobile-nav-item ${isActive('/') ? 'active' : ''}`}
-                                onClick={() => handleNavigation('/')}
-                            >
-                                <Home size={18} />
-                                <span>Home</span>
-                            </div>
-
-                            <div
-                                className={`mobile-nav-item ${isActive('/models') ? 'active' : ''}`}
-                                onClick={() => handleNavigation('/models')}
-                            >
-                                <Box size={18} />
-                                <span>Models</span>
-                            </div>
-
-                            <div
-                                className={`mobile-nav-item ${isActive('/playground') ? 'active' : ''}`}
-                                onClick={() => handleNavigation('/playground')}
-                            >
-                                <Cpu size={18} />
-                                <span>Playground</span>
-                            </div>
-
-                            <div
-                                className={`mobile-nav-item ${isActive('/usage') ? 'active' : ''}`}
-                                onClick={() => handleNavigation('/usage')}
-                            >
-                                <BarChart2 size={18} />
-                                <span>Usage</span>
-                            </div>
-
-                            <div
-                                className={`mobile-nav-item ${isActive('/api-keys') ? 'active' : ''}`}
-                                onClick={() => handleNavigation('/api-keys')}
-                            >
-                                <Key size={18} />
-                                <span>API Keys</span>
-                            </div>
-
-                            <div
-                                className={`mobile-nav-item ${isActive('/settings') ? 'active' : ''}`}
-                                onClick={() => handleNavigation('/settings')}
-                            >
-                                <Settings size={18} />
-                                <span>Settings</span>
-                            </div>
-
-                            <div
-                                className={`mobile-nav-item docs-item ${isActive('/docs') ? 'active' : ''}`}
-                                onClick={() => handleNavigation('/docs')}
-                            >
-                                <FileText size={18} />
-                                <span>Docs</span>
-                                <ExternalLink size={14} className="external-icon" />
-                            </div>
-                        </nav>
-
-                        {/* Footer */}
-                        <div className="mobile-sidebar-footer">
-                            {/* Social Icons */}
-                            <div className="mobile-social-icons">
-                                <a href="https://t.me/" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <path d="M21.944 2.112a1.5 1.5 0 0 0-1.6-.2L2.7 9.1a1.5 1.5 0 0 0 .1 2.8l4.7 1.6 1.7 5.2a1.5 1.5 0 0 0 2.7.3l2.1-3.2 4.6 3.4a1.5 1.5 0 0 0 2.4-1l2-15a1.5 1.5 0 0 0-.526-1.188zM9.7 15.2l-1.2-3.7 8.2-6.2-7 7.6zm2.2 3.1l-1.1-3.3 1.7-1.3 2.1 1.5zm7.1-1.2-4.2-3.1 5.2-7.6z" fill="#9B9797" />
-                                    </svg>
-                                </a>
-
-                                <a href="https://discord.gg/" target="_blank" rel="noopener noreferrer" aria-label="Discord">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <path d="M20.317 4.369a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" fill="#9B9797" />
-                                    </svg>
-                                </a>
-
-                                <a href="https://x.com/" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="#9B9797" />
-                                    </svg>
-                                </a>
-                            </div>
-
-                            {/* User Section */}
-                            <div className="mobile-user-section">
-                                {user ? (
-                                    <div className="mobile-user-profile">
-                                        <div className="mobile-user-info">
-                                            <div className="mobile-avatar">
-                                                <span>{user.name ? user.name[0].toUpperCase() : 'U'}</span>
-                                            </div>
-                                            <span className="mobile-username">
-                                                {user.email.length > 15 ? user.email.slice(0, 15) + '...' : user.email}
-                                            </span>
-                                        </div>
-                                        <button className="mobile-logout-btn" onClick={handleLogout} aria-label="Logout">
-                                            <LogOut size={18} color="#888" />
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <div className="mobile-connect-section">
-                                        <button className="px-3 py-2 bg-white/10 rounded-md hover:bg-white/20 transition" onClick={() => openConnectModal && openConnectModal()}>
-                                            Connect Wallet
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </>
-            )}
-
-            {/* Mobile Playground View */}
-            <div className="mobile-playground-view">
-                <div className="mobile-playground-card">
-                    <div className="mobile-playground-content">
-                        <div className="mobile-playground-icon">
-                            <img src="/images/playground-union-icon.svg" alt="Playground" />
-                        </div>
-                        <div className="mobile-playground-text">
-                            <h2 className="mobile-playground-title">View Playground on desktop</h2>
-                            <p className="mobile-playground-subtitle">Playground is best viewed on a larger screen</p>
+                        <div className="flex flex-col gap-3 w-full">
+                            <h2 className="font-bold text-2xl leading-[1.234375] text-white m-0 text-left">View Playground on desktop</h2>
+                            <p className="font-normal text-sm leading-[1.1572265625] text-[#999999] m-0 text-left">Playground is best viewed on a larger screen</p>
                         </div>
                         <button
-                            className="mobile-playground-button"
+                            className="bg-[#383940] border border-[#383940] rounded-xl py-4 px-3 w-full text-white font-normal text-xl leading-[1.1572265625] cursor-pointer transition-colors duration-200 text-center hover:bg-[#4a4a52] hover:border-[#4a4a52]"
                             onClick={() => handleNavigation('/models')}
                         >
                             View Models
@@ -3339,11 +3162,11 @@ const PlaygroundPage = () => {
                 </div>
             </div>
 
-            {/* Desktop Playground View */}
-            <div className="desktop-playground-view">
-                <div className="playground-flex-layout">
+            {/* Desktop view */}
+            <div className="hidden md:flex h-full">
+                <div className="flex flex-row items-stretch w-full h-full gap-0 overflow-hidden">
                     {/* Main Section (Contains everything except right panel) */}
-                    <div className="playground-main-section" style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+                    <div className="flex-1 flex flex-col bg-[#121212] border border-[#333] overflow-hidden">
                         {/* Top Bar */}
                         <div className="playground-topbar">
                             <div className="playground-topbar-left">
@@ -3386,7 +3209,7 @@ const PlaygroundPage = () => {
                         </div>
 
                         {/* Center Content (Chat History) */}
-                        <div className="playground-center-content" style={{ width: '100%', maxWidth: 700, margin: '0 auto', paddingTop: 16, flex: 1, overflowY: 'auto', minHeight: 0 }}>
+                        <div className="flex-1 flex flex-col items-center justify-start min-h-0 overflow-hidden w-full max-w-[700px] mx-auto pt-4 overflow-y-auto">
                             <div className="playground-chat-history" ref={chatHistoryContainerRef}>
                                 {chatHistory.length === 0 && (
                                     <div style={{ textAlign: 'center', color: '#bbb', marginTop: 40 }}>
@@ -3995,9 +3818,6 @@ const PlaygroundPage = () => {
 
                     {/* Right Panel Section */}
                     <div className="playground-right-panel-section">
-                        <div className="playground-panel-settings-bar">
-
-                        </div>
                         <aside className="playground-right-panel">
                             <div className="playground-panel-content">
                                 {/* Model Selector */}
@@ -4005,7 +3825,7 @@ const PlaygroundPage = () => {
                                     <label className="playground-label">Model</label>
                                     <div className="playground-dropdown" style={{ padding: 0 }}>
                                         <ModelDropdown
-                                            models={MODEL_OPTIONS}
+                                            models={playgroundModels}
                                             selectedModel={selectedModel}
                                             setSelectedModelAndNavigate={(modelValue) => {
                                                 setSelectedModel(modelValue);
@@ -4046,7 +3866,7 @@ const PlaygroundPage = () => {
                                                 <input
                                                     type="range"
                                                     min="256"
-                                                    max="4096"
+                                                    max="4000"
                                                     value={outputLength}
                                                     onChange={e => setOutputLength(Number(e.target.value))}
                                                     className="playground-slider"
@@ -4094,7 +3914,7 @@ const PlaygroundPage = () => {
                     </div>
                 </div>
             </div>
-        </div >
+        </div>
     );
 };
 

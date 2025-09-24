@@ -20,7 +20,8 @@ body {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
 }
 
@@ -49,9 +50,11 @@ body {
   .app {
     flex-direction: column;
     border-radius: 0;
-    height: 100vh;
+    height: auto;
+    min-height: 100vh;
     width: 100vw;
-    overflow: visible !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
   }
   
   /* Hide sidebar on mobile */
@@ -62,11 +65,11 @@ body {
   .main-content {
     margin-left: 0;
     width: 100%;
-    max-width: 390px;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 0;
     background: #121214;
     min-height: 100vh;
-    overflow-y: visible;
+    overflow-y: auto;
     overflow-x: hidden;
   }
   
