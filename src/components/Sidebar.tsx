@@ -57,35 +57,36 @@ const Sidebar = () => {
         </div>
 
         <div className="flex items-center">
-          {showAccountInfo ? (
-            <div className="flex items-center justify-between items-center w-full space-x-6">
+          {!isConnected ? (
+            <button className="px-3 py-2 bg-blue-500 rounded-md hover:bg-blue-600 transition-all duration-200 text-white font-medium text-sm active:scale-95" onClick={() => openConnectModal && openConnectModal()}>
+              Connect Wallet
+            </button>
+          ) : (
+            <div className="flex items-center justify-between w-full space-x-6">
               <div className="min-w-0 flex-1">
                 <p
                   className="text-sm font-medium text-white truncate cursor-pointer hover:text-blue-400 transition-colors"
-                  title={address || ''}
+                  title={user?.email || address || ''}
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (address) {
-                      navigator.clipboard.writeText(address);
+                    const displayText = user?.email || address || '';
+                    if (displayText) {
+                      navigator.clipboard.writeText(displayText);
                     }
                   }}
                 >
-                  {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : 'Account'}
+                  {user?.email ? displayEmail(user.email) : (address ? `${address.slice(0, 6)}...${address.slice(-4)}` : 'Account')}
                 </p>
               </div>
               <button
                 className="bg-transparent border-0 p-2 cursor-pointer hover:bg-white/10 rounded-md transition-all duration-200 ml-auto active:scale-95"
                 aria-label="Logout"
-                onClick={handleLogout}
+                onClick={logoutUser}
                 title="Disconnect"
               >
                 <LogOut size={18} color="#888" className="hover:text-red-400 transition-colors duration-200" />
               </button>
             </div>
-          ) : (
-            <button className="px-3 py-2 bg-blue-500 rounded-md hover:bg-blue-600 transition-all duration-200 text-white font-medium text-sm active:scale-95" onClick={() => openConnectModal && openConnectModal()}>
-              Connect Wallet
-            </button>
           )}
         </div>
       </div>

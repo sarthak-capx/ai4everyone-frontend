@@ -6,10 +6,12 @@ import { useNavigate } from 'react-router-dom';
 import { API_ENDPOINTS } from '../config';
 import { secureStorage, getCurrentJWTSync } from '../utils/secureStorage';
 import { secureClipboardCopy } from '../utils/secureClipboard';
+import { useAccount } from 'wagmi';
 
 const BottomSection = () => {
   const navigate = useNavigate();
   const { user } = useUser();
+  const { isConnected } = useAccount();
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -349,7 +351,7 @@ const BottomSection = () => {
           <div style={{ textAlign: 'center', padding: '50px', background: '#111', border: '1px solid #333', borderRadius: '14px', marginTop: '20px', width: '100%' }}>
             <h3 style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>View Your Recent Generations</h3>
             <p style={{ color: '#bbb', fontSize: '16px', marginTop: '10px' }}>
-              Please log in to see your recent generations.
+              {!isConnected ? 'Connect your wallet' : 'Please log in'} to see your recent generations.
             </p>
           </div>
         </div>

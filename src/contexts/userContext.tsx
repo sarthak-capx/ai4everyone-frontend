@@ -47,7 +47,7 @@ interface UserContextType {
     setUser: (user: User | null, jwt?: string) => Promise<void>;
     loginUser: () => Promise<void>;
     logoutUser: () => void;
-    signupUser: () => Promise<void>; // Same as loginUser for now
+    signupUser: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -63,6 +63,7 @@ export const useUser = () => {
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUserState] = useState<User | null>(null);
     const isInitialized = useRef(false);
+    const mounted = useRef(false); // Add mounted ref
     const [isLoadingSession, setIsLoadingSession] = useState(true);
 
     const { address, isConnected } = useAccount();
@@ -183,7 +184,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await loginWithWallet(address);
     }, [loginWithWallet, isConnected, address]);
 
-    const signupUser = loginUser; // Backend handles creation if not exists
+    const signupUser = loginUser;
 
     const logoutUser = useCallback(async () => {
         try {
@@ -219,29 +220,21 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         init();
     }, []);
 
-    // Auto-login/reconnect effect
+    // Set mounted after initial render
     useEffect(() => {
-        if (isLoadingSession) return;
+        mounted.current = true;
+    }, []);
 
-        console.log('Auto-login check:', { isConnected, address: address?.slice(0, 10), userEmail: user?.email?.slice(0, 10) });
-
-        if (isConnected && address && walletClient) {
-            if (!user) {
-                // No user, login
-                loginWithWallet(address).catch(console.error);
-            } else if (user.email && user.email.toLowerCase() !== address.toLowerCase()) {
-                // Mismatch, re-login
-                console.log('Wallet address mismatch, re-logging in');
-                loginWithWallet(address).catch(console.error);
-            } else {
-                // Match, good
-                console.log('Wallet matches user');
-            }
-        } else if (!isConnected && user) {
-            // Wallet disconnected but user from session - keep for now, but perhaps prompt reconnect
-            console.log('Wallet disconnected, keeping session user');
+    // Auto-sign after wallet connection - only after mounted
+    useEffect(() => {
+        if (mounted.current && isConnected && address && !user && walletClient) {
+            console.log('Auto-signing after connection...');
+            loginWithWallet(address).catch(err => {
+                console.error('Auto-sign failed:', err);
+                // Don't disconnect; user can logout and retry
+            });
         }
-    }, [isConnected, address, walletClient, user, loginWithWallet, isLoadingSession]);
+    }, [mounted, isConnected, address, user, walletClient, loginWithWallet]); // Add mounted to deps
 
     return (
         <UserContext.Provider value={{ user, isLoadingSession, setUser, loginUser, logoutUser, signupUser }}>

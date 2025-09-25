@@ -193,7 +193,7 @@ const UsagePage: React.FC = React.memo(() => {
     const [hoveredBar, setHoveredBar] = useState<{ type: 'api' | 'transaction', index: number, value: number, month: string } | null>(null);
     const { user } = useUser();
     const navigate = useNavigate();
-    const { chain, isConnected, status } = useAccount();
+    const { chain, isConnected: isWalletConnected, status } = useAccount();
     const isWalletLoading = status === 'connecting' || status === 'reconnecting';
     const { switchChainAsync } = useSwitchChain();
     const [selectedChainId, setSelectedChainId] = useState<ChainId>(polygon.id);
@@ -249,20 +249,20 @@ const UsagePage: React.FC = React.memo(() => {
             setBalanceError(null);
             return;
         }
-        if (isConnected && user?.id) {
+        if (isWalletConnected && user?.id) {
             setBalanceError(null);
             setIsLoading(true);
             fetchBalanceWithRetry();
-        } else if (isConnected && !user?.id) {
+        } else if (isWalletConnected && !user?.id) {
             setBalance(null);
-            setBalanceError('Log in to view');
+            setBalanceError('Please log in to view');
             setIsLoading(false);
         } else {
             setBalance(null);
             setBalanceError('Connect wallet to view');
             setIsLoading(false);
         }
-    }, [user?.id, isConnected, isWalletLoading]);
+    }, [user?.id, isWalletConnected, isWalletLoading]);
 
     const fetchBalanceWithRetry = useCallback(async (retryCount = 0) => {
         if (!user?.email) return;
@@ -643,8 +643,8 @@ const UsagePage: React.FC = React.memo(() => {
                                         <div className="usage-bar-yaxis usage-bar-yaxis-overlay">
                                             {hasRealData ? (
                                                 // Dynamic Y-axis based on real data
-                                                [Math.ceil(maxApiCost), Math.ceil(maxApiCost * 0.8), Math.ceil(maxApiCost * 0.6), Math.ceil(maxApiCost * 0.4), Math.ceil(maxApiCost * 0.2), 0].map((v) => (
-                                                    <span key={v} className="usage-bar-yaxis-label">${v}</span>
+                                                [Math.ceil(maxApiCost), Math.ceil(maxApiCost * 0.8), Math.ceil(maxApiCost * 0.6), Math.ceil(maxApiCost * 0.4), Math.ceil(maxApiCost * 0.2), 0].map((v, index) => (
+                                                    <span key={index} className="usage-bar-yaxis-label">${v}</span>
                                                 ))
                                             ) : (
                                                 // Fallback Y-axis
@@ -719,13 +719,13 @@ const UsagePage: React.FC = React.memo(() => {
                                         <div className="usage-bar-yaxis usage-bar-yaxis-overlay">
                                             {hasRealData ? (
                                                 // Dynamic Y-axis based on real data
-                                                [Math.ceil(maxTransactions), Math.ceil(maxTransactions * 0.8), Math.ceil(maxTransactions * 0.6), Math.ceil(maxTransactions * 0.4), Math.ceil(maxTransactions * 0.2), 0].map((v) => (
-                                                    <span key={v} className="usage-bar-yaxis-label">${v}</span>
+                                                [Math.ceil(maxTransactions), Math.ceil(maxTransactions * 0.8), Math.ceil(maxTransactions * 0.6), Math.ceil(maxTransactions * 0.4), Math.ceil(maxTransactions * 0.2), 0].map((v, index) => (
+                                                    <span key={index} className="usage-bar-yaxis-label">${v}</span>
                                                 ))
                                             ) : (
                                                 // Fallback Y-axis
-                                                [Math.ceil(maxTransactions), Math.ceil(maxTransactions * 0.8), Math.ceil(maxTransactions * 0.6), Math.ceil(maxTransactions * 0.4), Math.ceil(maxTransactions * 0.2), 0].map((v) => (
-                                                    <span key={v} className="usage-bar-yaxis-label">${v}</span>
+                                                [Math.ceil(maxTransactions), Math.ceil(maxTransactions * 0.8), Math.ceil(maxTransactions * 0.6), Math.ceil(maxTransactions * 0.4), Math.ceil(maxTransactions * 0.2), 0].map((v, index) => (
+                                                    <span key={index} className="usage-bar-yaxis-label">${v}</span>
                                                 ))
                                             )}
                                             <div className="usage-bar-yaxis-vertical"></div>
@@ -930,7 +930,7 @@ const UsagePage: React.FC = React.memo(() => {
                     <div style={{ textAlign: 'center', padding: '50px', background: '#111', border: '1px solid #333', borderRadius: '14px', marginTop: '20px' }}>
                         <h3 style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>Please Log In</h3>
                         <p style={{ color: '#bbb', fontSize: '16px', marginTop: '10px' }}>
-                            Connect your wallet to view your account balance and usage statistics.
+                            {!isWalletConnected ? 'Connect your wallet' : 'Please log in'} to view your account balance and usage statistics.
                         </p>
                     </div>
                 )}

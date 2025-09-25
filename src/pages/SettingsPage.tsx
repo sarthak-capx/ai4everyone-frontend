@@ -11,6 +11,7 @@ import { useDisconnect } from 'wagmi';
 import { secureStorage, getCurrentJWTSync } from '../utils/secureStorage';
 import { useApiCall, getErrorMessage } from '../utils/apiClient';
 import ViewDocumentationCard from '../components/ViewDocumentationCard';
+import { useAccount } from 'wagmi';
 
 interface PaymentTransaction {
     hash: string;
@@ -21,6 +22,7 @@ interface PaymentTransaction {
 
 const SettingsPage = React.memo(() => {
     const { user, setUser } = useUser();
+    const { isConnected } = useAccount();
     const { disconnect } = useDisconnect();
     const [balance, setBalance] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -188,7 +190,7 @@ const SettingsPage = React.memo(() => {
                             <div className="settings-card-content">Name: <span style={{ fontWeight: 700 }}>{getDisplayName(user)}</span></div>
                             <div className="settings-card-content">User ID: <span style={{ fontWeight: 700 }}>{user?.id ? `${user.id.slice(0, 8)}...` : '-'}</span></div>
                         </div>
-                    ) : (
+                    ) : !isConnected ? (
                         <div className="settings-account-card" style={{
                             background: '#181818',
                             border: '1px solid #333',
@@ -211,14 +213,40 @@ const SettingsPage = React.memo(() => {
                                 marginBottom: '24px',
                                 lineHeight: '1.5'
                             }}>
-                                Sign in with your crypto wallet to access your account settings, view balance, and manage payment methods.
+                                Sign in with your crypto wallet to access your account settings.
                             </div>
                             <button
                                 className="px-4 py-3 bg-blue-500 rounded-md hover:bg-blue-600 transition-all duration-200 text-white font-medium text-sm active:scale-95"
                                 onClick={() => openConnectModal && openConnectModal()}
                             >
-                                Connect Wallet to Continue
+                                Connect Wallet
                             </button>
+                        </div>
+                    ) : (
+                        <div className="settings-account-card" style={{
+                            background: '#181818',
+                            border: '1px solid #333',
+                            borderRadius: '12px',
+                            textAlign: 'center',
+                            padding: '40px 32px'
+                        }}>
+                            <div style={{
+                                fontSize: '24px',
+                                fontWeight: '700',
+                                color: '#fff',
+                                marginBottom: '12px',
+                                fontFamily: 'system-ui, -apple-system, sans-serif'
+                            }}>
+                                Please Sign In
+                            </div>
+                            <div style={{
+                                color: '#bbb',
+                                fontSize: '15px',
+                                marginBottom: '24px',
+                                lineHeight: '1.5'
+                            }}>
+                                Wallet connected. Please sign the message to access your account.
+                            </div>
                         </div>
                     )}
                 </div>

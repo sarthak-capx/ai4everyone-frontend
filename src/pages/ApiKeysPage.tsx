@@ -9,6 +9,7 @@ import { secureStorage, getCurrentJWTSync } from '../utils/secureStorage';
 import { ApiKeySchema, sanitizeInput } from '../utils/validation';
 import ViewDocumentationCard from '../components/ViewDocumentationCard';
 import { secureClipboardCopy } from '../utils/secureClipboard';
+import { useAccount } from 'wagmi';
 
 // Define the type for an API key row
 interface ApiKeyRow {
@@ -37,6 +38,7 @@ const ApiKeysPage: React.FC = React.memo(() => {
     const isCreatingRef = useRef(false);
     const abortControllerRef = useRef<AbortController | null>(null);
     const { user } = useUser();
+    const { isConnected } = useAccount();
     const navigate = useNavigate();
     const [copiedMap, setCopiedMap] = useState<Record<string, boolean>>({});
 
@@ -124,10 +126,16 @@ const ApiKeysPage: React.FC = React.memo(() => {
         try {
             const jwt = getCurrentJWTSync();
             console.log('🔑 JWT available:', !!jwt);
-            if (!user || !jwt) {
-                console.log('❌ No user or JWT, setting error');
-                setError('Log in to view');
+            if (!user) {
+                setError(isConnected ? 'Please log in to view API keys' : 'Connect wallet to view API keys');
                 setApiKeys([]);
+                setLoading(false);
+                return;
+            }
+            if (!jwt) {
+                setError('Please log in to view API keys');
+                setApiKeys([]);
+                setLoading(false);
                 return;
             }
 
@@ -776,6 +784,10 @@ const ApiKeysPage: React.FC = React.memo(() => {
                     <tbody>
                         {loading ? (
                             <tr><td colSpan={4}>Loading...</td></tr>
+                        ) : !user ? (
+                            <tr><td colSpan={4} style={{ textAlign: 'center', padding: '20px' }}>
+                                {!isConnected ? 'Connect wallet to view API keys' : 'Please log in to view API keys'}
+                            </td></tr>
                         ) : apiKeys.length === 0 ? (
                             <tr><td colSpan={4}>No API keys found.</td></tr>
                         ) : (
