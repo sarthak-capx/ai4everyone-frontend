@@ -191,7 +191,7 @@ const UsagePage: React.FC = React.memo(() => {
     const [paymentError, setPaymentError] = useState<string | null>(null);
     const [txHash, setTxHash] = useState<`0x${string}` | undefined>();
     const [hoveredBar, setHoveredBar] = useState<{ type: 'api' | 'transaction', index: number, value: number, month: string } | null>(null);
-    const { user, isLoadingSession } = useUser();
+    const { user } = useUser();
     const navigate = useNavigate();
     const { chain, isConnected: isWalletConnected, status } = useAccount();
     const isWalletLoading = status === 'connecting' || status === 'reconnecting';
@@ -244,7 +244,7 @@ const UsagePage: React.FC = React.memo(() => {
     }, [isModalOpen, selectedChainId, chain, switchChainAsync]);
 
     useEffect(() => {
-        if (isWalletLoading || isLoadingSession) {
+        if (isWalletLoading) {
             setIsLoading(true);
             setBalanceError(null);
             return;
@@ -262,7 +262,7 @@ const UsagePage: React.FC = React.memo(() => {
             setBalanceError('Connect wallet to view');
             setIsLoading(false);
         }
-    }, [user?.id, isWalletConnected, isWalletLoading, isLoadingSession]);
+    }, [user?.id, isWalletConnected, isWalletLoading]);
 
     const fetchBalanceWithRetry = useCallback(async (retryCount = 0) => {
         if (!user?.email) return;

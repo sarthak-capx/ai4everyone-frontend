@@ -65,7 +65,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const isInitialized = useRef(false);
     const mounted = useRef(false); // Add mounted ref
     const [isLoadingSession, setIsLoadingSession] = useState(true);
-    const [sessionLoaded, setSessionLoaded] = useState(false); // Add sessionLoaded state
 
     const { address, isConnected } = useAccount();
     const { data: walletClient } = useWalletClient();
@@ -212,7 +211,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setIsLoadingSession(true);
             const sessionData = await loadUserSession();
             setIsLoadingSession(false);
-            setSessionLoaded(true); // Set loaded after session check
 
             if (!sessionData && !isConnected) {
                 // No session and no wallet - clear state
@@ -227,16 +225,16 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         mounted.current = true;
     }, []);
 
-    // Auto-sign after wallet connection - only after mounted and session loaded
+    // Auto-sign after wallet connection - only after mounted
     useEffect(() => {
-        if (mounted.current && sessionLoaded && isConnected && address && !user && walletClient) {
+        if (mounted.current && isConnected && address && !user && walletClient) {
             console.log('Auto-signing after connection...');
             loginWithWallet(address).catch(err => {
                 console.error('Auto-sign failed:', err);
                 // Don't disconnect; user can logout and retry
             });
         }
-    }, [mounted, sessionLoaded, isConnected, address, user, walletClient, loginWithWallet]); // Add sessionLoaded to deps
+    }, [mounted, isConnected, address, user, walletClient, loginWithWallet]); // Add mounted to deps
 
     return (
         <UserContext.Provider value={{ user, isLoadingSession, setUser, loginUser, logoutUser, signupUser }}>
