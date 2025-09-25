@@ -13,6 +13,16 @@ body {
   line-height: 1.5;
 }
 
+/* Shared page container */
+.page-wrap {
+  max-width: 1200px;
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 0;
+  padding-right: 0;
+}
+
 /* Main app layout */
 .app {
   background: #121214;
@@ -46,7 +56,7 @@ body {
     background: none !important;
     background-image: none !important;
   }
-  
+
   .app {
     flex-direction: column;
     border-radius: 0;
@@ -56,12 +66,12 @@ body {
     overflow-y: auto !important;
     overflow-x: hidden !important;
   }
-  
+
   /* Hide sidebar on mobile */
   .sidebar {
     display: none;
   }
-  
+
   .main-content {
     margin-left: 0;
     width: 100%;
@@ -72,7 +82,7 @@ body {
     overflow-y: auto;
     overflow-x: hidden;
   }
-  
+
   .content-container {
     width: 100% !important;
     max-width: 100% !important;
@@ -81,7 +91,9 @@ body {
   }
 }
 
-.settings-header, .settings-section-heading, .settings-balance-amount {
+.settings-header,
+.settings-section-heading,
+.settings-balance-amount {
   font-family: 'Schibsted Grotesk', Arial Black, sans-serif !important;
 }
 
@@ -137,10 +149,11 @@ body {
 
 .settings-verification-card {
   background: linear-gradient(120deg, #263a1e 60%, #232323 100%);
-  box-shadow: 0 2px 16px 0 rgba(60,255,60,0.04);
+  box-shadow: 0 2px 16px 0 rgba(60, 255, 60, 0.04);
 }
 
-.settings-2fa-card, .settings-u2f-card {
+.settings-2fa-card,
+.settings-u2f-card {
   background: #232323;
 }
 
@@ -184,6 +197,7 @@ body {
   text-align: left;
   gap: 6px;
 }
+
 .settings-verified-badge svg {
   color: #a7ff58;
   flex-shrink: 0;
@@ -246,7 +260,7 @@ body {
   margin: 0 0 12px 0;
   padding: 0;
   background: #181818;
-  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.10);
+  box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.10);
   border: 1px solid #444;
   overflow-x: auto;
   overflow-y: hidden;
@@ -263,7 +277,8 @@ body {
   font-weight: 400;
 }
 
-.settings-table th, .settings-table td {
+.settings-table th,
+.settings-table td {
   border: none;
   padding: 10px 15px;
   text-align: left;
@@ -317,12 +332,15 @@ body {
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
+
 .settings-docs-box:hover {
   background-color: #222;
 }
+
 .settings-docs-box .docs-content {
   flex: 1;
 }
+
 .settings-docs-box .docs-heading {
   font-family: 'Schibsted Grotesk', Arial Black, sans-serif !important;
   font-size: 24px;
@@ -330,14 +348,17 @@ body {
   color: #fff;
   margin-bottom: 8px;
 }
+
 .settings-docs-box .docs-subtitle {
   font-size: 14px;
   color: #999;
 }
+
 .settings-docs-box .docs-icon {
   color: #666;
   transition: color 0.2s ease;
 }
+
 .settings-docs-box:hover .docs-icon {
   color: #fff;
 }
@@ -397,23 +418,27 @@ body {
     margin-right: auto;
     background: #121214;
   }
+
   .settings-header {
     font-size: 32px;
     margin-top: 24px;
     margin-bottom: 0;
     text-align: left;
   }
+
   .settings-desc {
     font-size: 14px;
     margin-bottom: 16px;
     color: #bbb;
     text-align: left;
   }
+
   .settings-cards-row {
     flex-direction: column;
     gap: 12px;
     margin-bottom: 8px;
   }
+
   .settings-account-card {
     min-width: 0;
     width: 100%;
@@ -421,18 +446,21 @@ body {
     font-size: 15px;
     border-radius: 12px;
   }
+
   .settings-section-heading {
     font-size: 24px;
     margin-top: 32px;
     margin-bottom: 0;
     text-align: left;
   }
+
   .settings-section-desc {
     font-size: 14px;
     margin-bottom: 16px;
     color: #bbb;
     text-align: left;
   }
+
   .settings-balance-section {
     flex-direction: column;
     align-items: flex-start;
@@ -442,18 +470,22 @@ body {
     border-radius: 12px;
     margin-bottom: 24px;
   }
+
   .settings-balance-title {
     font-size: 18px;
     margin-bottom: 8px;
   }
+
   .settings-balance-amount {
     font-size: 36px;
     margin-top: 4px;
   }
+
   .settings-balance-amount .currency {
     font-size: 22px;
     margin-right: 4px;
   }
+
   .settings-balance-button {
     font-size: 16px;
     padding: 12px 0;
@@ -462,20 +494,23 @@ body {
     margin-left: 0;
     border-radius: 10px;
   }
+
   /* Payment Cards */
-  .settings-content-container > div[style*='display: flex'] {
+  .settings-content-container>div[style*='display: flex'] {
     flex-direction: column !important;
     gap: 16px !important;
     max-width: 100% !important;
     margin-bottom: 24px !important;
   }
-  .settings-content-container > div[style*='display: flex'] > div {
+
+  .settings-content-container>div[style*='display: flex']>div {
     min-width: 0 !important;
     width: 100% !important;
     padding: 16px !important;
     border-radius: 12px !important;
     font-size: 15px !important;
   }
+
   /* Billing Table */
   .settings-table-container {
     width: 100%;
@@ -483,20 +518,25 @@ body {
     border-radius: 12px;
     overflow-x: auto;
   }
-  .settings-table th, .settings-table td {
+
+  .settings-table th,
+  .settings-table td {
     padding: 8px 6px;
     font-size: 11px;
     white-space: nowrap;
   }
+
   .settings-table th {
     font-size: 13px;
   }
+
   .settings-table-note {
     font-size: 12px;
     margin-left: 0;
     text-align: left;
     color: #888;
   }
+
   /* Docs Box */
   .settings-docs-box {
     width: 100%;
@@ -507,18 +547,22 @@ body {
     align-items: center;
     gap: 12px;
   }
+
   .settings-docs-box .docs-icon-img {
     width: 32px;
     height: 32px;
     margin-right: 12px;
   }
+
   .settings-docs-box .docs-heading {
     font-size: 18px;
     margin-bottom: 4px;
   }
+
   .settings-docs-box .docs-subtitle {
     font-size: 13px;
   }
+
   .settings-docs-box .docs-icon {
     width: 20px;
     height: 20px;
@@ -532,30 +576,36 @@ body {
     gap: 16px;
     border-radius: 14px;
   }
+
   .settings-balance-title {
     font-size: 18px;
   }
+
   .settings-balance-amount {
     font-size: 36px;
     margin-top: 4px;
   }
+
   .settings-balance-amount .currency {
     font-size: 22px;
     margin-right: 4px;
   }
+
   .settings-balance-button {
     font-size: 16px;
     padding: 16px 0;
     min-width: 160px;
     border-radius: 12px;
   }
-  .settings-content-container > div[style*='display: flex'] {
+
+  .settings-content-container>div[style*='display: flex'] {
     flex-direction: column !important;
     gap: 14px !important;
     max-width: 100% !important;
     margin-bottom: 18px !important;
   }
-  .settings-content-container > div[style*='display: flex'] > div {
+
+  .settings-content-container>div[style*='display: flex']>div {
     min-width: 0 !important;
     width: 100% !important;
     padding: 18px !important;
@@ -570,6 +620,7 @@ body {
     word-break: break-word;
     white-space: normal;
   }
+
   .settings-card-content {
     word-break: break-word;
     white-space: normal;

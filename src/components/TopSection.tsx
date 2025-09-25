@@ -102,9 +102,9 @@ const TopSection = () => {
                   {({ className, style, tokens, getLineProps, getTokenProps }) => (
                     <pre className={className} style={{ ...style, background: '#000', fontSize: 13, margin: 0, padding: '20px', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
                       {tokens.map((line, i) => (
-                        <div key={i} {...getLineProps({ line, key: i })}>
+                        <div key={i} {...getLineProps({ line })}>
                           {line.map((token, key) => (
-                            <span key={key} {...getTokenProps({ token, key })} />
+                            <span key={key} {...getTokenProps({ token })} />
                           ))}
                         </div>
                       ))}
@@ -123,9 +123,9 @@ const TopSection = () => {
                   {({ className, style, tokens, getLineProps, getTokenProps }) => (
                     <pre className={className} style={{ ...style, background: '#000', fontSize: 13, margin: 0, padding: '20px', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
                       {tokens.map((line, i) => (
-                        <div key={i} {...getLineProps({ line, key: i })}>
+                        <div key={i} {...getLineProps({ line })}>
                           {line.map((token, key) => (
-                            <span key={key} {...getTokenProps({ token, key })} />
+                            <span key={key} {...getTokenProps({ token })} />
                           ))}
                         </div>
                       ))}
@@ -144,9 +144,9 @@ const TopSection = () => {
                   {({ className, style, tokens, getLineProps, getTokenProps }) => (
                     <pre className={className} style={{ ...style, background: '#000', fontSize: 13, margin: 0, padding: '20px', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
                       {tokens.map((line, i) => (
-                        <div key={i} {...getLineProps({ line, key: i })}>
+                        <div key={i} {...getLineProps({ line })}>
                           {line.map((token, key) => (
-                            <span key={key} {...getTokenProps({ token, key })} />
+                            <span key={key} {...getTokenProps({ token })} />
                           ))}
                         </div>
                       ))}

@@ -289,7 +289,7 @@ const BottomSection = () => {
   }
 
   return (
-    <section className="flex flex-col items-start p-0 w-full pb-20 mb-5 md:bg-transparent bg-[#121214] md:px-0 px-4">
+    <section className="flex flex-col items-start p-0 w-full md:bg-transparent bg-[#121214] md:px-0 px-4">
       {user ? (
         <div className="flex flex-col items-start px-4 md:px-5 pt-5 pb-0 max-w-[1200px] w-full md:w-[90%] mx-auto mt-[-40px] md:mt-[-50px] relative z-[3]">
           <h2 className="uppercase text-white text-[24px] md:text-[32px] font-bold tracking-[1px] text-left">RECENT GENERATIONS</h2>

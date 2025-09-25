@@ -589,14 +589,14 @@ const UsagePage: React.FC = React.memo(() => {
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[120px] bg-gradient-to-t from-black/80 to-transparent z-[2]"></div>
             </div>
 
-            <div className="flex flex-col items-start max-w-[1200px] md:w-[90%] w-full mx-auto md:mt-[-35px] relative z-[3] px-4 md:px-0">
+            <div className="flex flex-col items-start page-wrap md:mt-[-35px] relative z-[3] px-4 md:px-0">
                 <div className="flex-1">
                     <h1 className="font-black text-[40px] text-white">Usage</h1>
                     <p className="text-sm md:text-base text-[#999999] text-left mb-4 w-full">Monitor your API activity, track spending, and manage your account balance all in one place.</p>
                 </div>
             </div>
 
-            <div className="max-w-[1200px] w-[90%] mx-auto relative z-[3] flex flex-col gap-0">
+            <div className="page-wrap relative z-[3] flex flex-col gap-0">
                 {/* Account Balance Card */}
                 <div className="bg-[#111] border border-[#333] rounded-[14px] text-white text-[16px] flex items-center justify-between px-[26px] py-5 mt-[10px] mb-[10px] max-w-[1200px] w-full box-border">
                     <div>

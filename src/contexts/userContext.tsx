@@ -76,6 +76,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         sessionStorage.removeItem('secure_api_keys');
         sessionStorage.removeItem('secure_balance');
         sessionStorage.removeItem('session_data');
+        sessionStorage.removeItem('api_keys_cache');
+        sessionStorage.removeItem('balance_cache');
         clearEncryptedJWT(); // Clear encrypted JWT
     };
 
@@ -93,9 +95,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
             return null;
         } catch (err: any) {
-            console.error('Failed to load session:', err);
             if (err.status === 401) {
                 console.log('No active session found');
+            } else {
+                console.error('Failed to load session:', err);
             }
             return null;
         }
@@ -116,8 +119,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const paymentData: PaymentHistoryResponse = await apiClient.get<PaymentHistoryResponse>('/balance/payment-history-jwt');
             const transactions = paymentData.transactions || [];
             window.dispatchEvent(new CustomEvent('userDataFetched', { detail: { type: 'paymentHistory', data: transactions } }));
-        } catch (err) {
-            console.error('Failed to fetch post-login data:', err);
+        } catch (err: any) {
+            if (err.status !== 401) {
+                console.error('Failed to fetch post-login data:', err);
+            }
         }
     };
 
@@ -139,9 +144,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setUserState(null);
             // Clear JWT from secure memory
             clearCurrentJWT();
-            // Broadcast logout to other tabs (still safe; session is not persisted)
-            sessionStorage.setItem('logout_flag', Date.now().toString());
-            // broadcastLogout();
             clearSessionData();
             console.log('User cleared');
         }
@@ -149,7 +151,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const loginWithWallet = useCallback(async (walletAddress: string) => {
         try {
-            if (sessionStorage.getItem('logout_flag')) return;
             const timestamp = Date.now();
             const message = `AI4EVERYONE Login: ${walletAddress} at ${timestamp}`;
             if (!walletClient || !address) throw new Error('No wallet client found');

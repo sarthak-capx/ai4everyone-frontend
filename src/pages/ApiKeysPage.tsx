@@ -423,7 +423,7 @@ const ApiKeysPage: React.FC = React.memo(() => {
             </div>
 
             {/* Header row */}
-            <div className="flex flex-col items-start max-w-[1200px] md:w-[90%] w-full mx-auto md:mt-[-35px] relative z-[3] px-4 md:px-0 ">
+            <div className="flex flex-col items-start page-wrap md:mt-[-35px] relative z-[3] px-4 md:px-0 ">
                 <div className="flex-1">
                     <h1 className="font-black text-[40px] text-white">API Keys</h1>
                     <p className="text-sm md:text-base text-[#999999] text-left mb-4 w-full">Your access gateway to the Unstoppable API platform.</p>
@@ -432,7 +432,7 @@ const ApiKeysPage: React.FC = React.memo(() => {
 
             {/* Create Key buttons row */}
             {user && (
-                <div className="max-w-[1200px] md:w-[90%] w-full mx-auto relative z-[3] px-4 md:px-0">
+                <div className="page-wrap relative z-[3] px-4 md:px-0">
                     <div className="content-header-row" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                         <div style={{ flex: 1 }}>
                             {/* Mobile-only button below heading */}
@@ -829,7 +829,7 @@ const ApiKeysPage: React.FC = React.memo(() => {
                     </tbody>
                 </table>
             </div>
-            <p className="table-note" style={{ margin: '25px', textAlign: 'left' }}>
+            <p className="table-note" style={{ margin: '16px auto 0 auto', textAlign: 'left', width: '90%', maxWidth: '1200px' }}>
                 Please Note: The full API key is shown once during creation - copy it immediately. In the table above, you can only see the key prefix.
             </p>
 

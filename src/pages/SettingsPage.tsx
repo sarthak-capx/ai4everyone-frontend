@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import '../styles/TopSection.css';
 import '../styles/BottomSection.css';
-import { CheckCircle, Mail, ShieldCheck, Fingerprint, ExternalLink, Home, Box, Cpu, BarChart2, Key, Settings, FileText, LogOut, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { useUser } from '../contexts/userContext';
 import { fetchUserBalance } from '../components/utils';
 import { API_ENDPOINTS } from '../config';
@@ -10,9 +10,7 @@ import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { useDisconnect } from 'wagmi';
 import { secureStorage, getCurrentJWTSync } from '../utils/secureStorage';
 import { useApiCall, getErrorMessage } from '../utils/apiClient';
-import { safeNavigate } from '../utils/validation';
 import ViewDocumentationCard from '../components/ViewDocumentationCard';
-// import { secureClipboardCopy } from '../utils/secureClipboard';
 
 interface PaymentTransaction {
     hash: string;
@@ -27,9 +25,7 @@ const SettingsPage = React.memo(() => {
     const [balance, setBalance] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [paymentHistory, setPaymentHistory] = useState<PaymentTransaction[]>([]);
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
-    const location = useLocation();
     const { openConnectModal } = useConnectModal();
 
     // API client for payment history
@@ -57,41 +53,6 @@ const SettingsPage = React.memo(() => {
         };
         repopulateApiKeys();
     }, [user?.id]);
-
-    // Toggle mobile menu
-    const toggleMobileMenu = () => {
-        setMobileMenuOpen(!mobileMenuOpen);
-    };
-
-    // Handle navigation
-    const handleNavigation = (path: string) => {
-        // 🔒 SECURITY: Use safe navigation with validation
-        if (safeNavigate(navigate, path)) {
-            setMobileMenuOpen(false);
-        }
-    };
-
-    // Check if route is active  
-    const isActive = (path: string) => location.pathname === path;
-
-    // Handle logout
-    const handleLogout = async () => {
-        const jwt = getCurrentJWTSync();
-        if (!user?.email || !jwt) return;
-
-        try {
-            await fetchUserBalance(user.email, jwt).then(bal => {
-                console.log('Final balance before logout:', bal);
-            });
-        } catch (error) {
-            console.error('Error fetching final balance:', error);
-        }
-
-        setUser(null);
-        await secureStorage.secureLogout();
-        try { disconnect(); } catch { }
-        setMobileMenuOpen(false);
-    };
 
     useEffect(() => {
         console.log('👤 SettingsPage: User changed:', user?.id, user?.email, 'Login timestamp:', user?.loginTimestamp);
@@ -183,8 +144,6 @@ const SettingsPage = React.memo(() => {
         }
     };
 
-
-
     // Helper to shorten the user email
     function shortId(email?: string) {
         if (!email) return '-';
@@ -215,150 +174,8 @@ const SettingsPage = React.memo(() => {
 
     return (
         <div className="models-page">
-            {/* Mobile Header */}
-            <div className="mobile-header">
-                <div className="mobile-logo">
-                    <img
-                        src="/images/logo.png"
-                        alt="Logo"
-                        className="logo-img"
-                    />
-                </div>
-                <div className="mobile-menu-icon" onClick={toggleMobileMenu}>
-                    <img
-                        src="/images/menu_alt_02.png"
-                        alt="Menu"
-                        className="menu-icon-img"
-                    />
-                </div>
-            </div>
 
-            {/* Mobile Sidebar Overlay */}
-            {mobileMenuOpen && (
-                <>
-                    {/* Backdrop */}
-                    <div className="mobile-sidebar-backdrop" onClick={toggleMobileMenu}></div>
-
-                    {/* Mobile Sidebar */}
-                    <div className="mobile-sidebar">
-                        {/* Header */}
-                        <div className="mobile-sidebar-header">
-                            <img src="/images/logo.png" alt="UNSTOPPABLE" className="mobile-sidebar-logo" />
-                        </div>
-
-                        {/* Navigation */}
-                        <nav className="mobile-sidebar-nav">
-                            <div
-                                className={`mobile-nav-item ${isActive('/') ? 'active' : ''}`}
-                                onClick={() => handleNavigation('/')}
-                            >
-                                <Home size={18} />
-                                <span>Home</span>
-                            </div>
-
-                            <div
-                                className={`mobile-nav-item ${isActive('/models') ? 'active' : ''}`}
-                                onClick={() => handleNavigation('/models')}
-                            >
-                                <Box size={18} />
-                                <span>Models</span>
-                            </div>
-
-                            <div
-                                className={`mobile-nav-item ${isActive('/playground') ? 'active' : ''}`}
-                                onClick={() => handleNavigation('/playground')}
-                            >
-                                <Cpu size={18} />
-                                <span>Playground</span>
-                            </div>
-
-                            <div
-                                className={`mobile-nav-item ${isActive('/usage') ? 'active' : ''}`}
-                                onClick={() => handleNavigation('/usage')}
-                            >
-                                <BarChart2 size={18} />
-                                <span>Usage</span>
-                            </div>
-
-                            <div
-                                className={`mobile-nav-item ${isActive('/api-keys') ? 'active' : ''}`}
-                                onClick={() => handleNavigation('/api-keys')}
-                            >
-                                <Key size={18} />
-                                <span>API Keys</span>
-                            </div>
-
-                            <div
-                                className={`mobile-nav-item ${isActive('/settings') ? 'active' : ''}`}
-                                onClick={() => handleNavigation('/settings')}
-                            >
-                                <Settings size={18} />
-                                <span>Settings</span>
-                            </div>
-
-                            <div
-                                className={`mobile-nav-item docs-item ${isActive('/docs') ? 'active' : ''}`}
-                                onClick={() => handleNavigation('/docs')}
-                            >
-                                <FileText size={18} />
-                                <span>Docs</span>
-                                <ExternalLink size={14} className="external-icon" />
-                            </div>
-                        </nav>
-
-                        {/* Footer */}
-                        <div className="mobile-sidebar-footer">
-                            {/* Social Icons */}
-                            <div className="mobile-social-icons">
-                                <a href="https://t.me/" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <path d="M21.944 2.112a1.5 1.5 0 0 0-1.6-.2L2.7 9.1a1.5 1.5 0 0 0 .1 2.8l4.7 1.6 1.7 5.2a1.5 1.5 0 0 0 2.7.3l2.1-3.2 4.6 3.4a1.5 1.5 0 0 0 2.4-1l2-15a1.5 1.5 0 0 0-.526-1.188zM9.7 15.2l-1.2-3.7 8.2-6.2-7 7.6zm2.2 3.1l-1.1-3.3 1.7-1.3 2.1 1.5zm7.1-1.2-4.2-3.1 5.2-7.6z" fill="#9B9797" />
-                                    </svg>
-                                </a>
-
-                                <a href="https://discord.gg/" target="_blank" rel="noopener noreferrer" aria-label="Discord">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <path d="M20.317 4.369a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 1 .01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" fill="#9B9797" />
-                                    </svg>
-                                </a>
-
-                                <a href="https://x.com/" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="#9B9797" />
-                                    </svg>
-                                </a>
-                            </div>
-
-                            {/* User Section */}
-                            <div className="mobile-user-section">
-                                {user ? (
-                                    <div className="mobile-user-profile">
-                                        <div className="mobile-user-info">
-                                            <div className="mobile-avatar">
-                                                <span>{user.name ? user.name[0].toUpperCase() : user.email.slice(2, 3).toUpperCase()}</span>
-                                            </div>
-                                            <span className="mobile-username">
-                                                {user.name || (user.email.length > 15 ? user.email.slice(0, 15) + '...' : user.email)}
-                                            </span>
-                                        </div>
-                                        <button className="mobile-logout-btn" onClick={handleLogout} aria-label="Logout">
-                                            <LogOut size={18} color="#888" />
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <div className="mobile-connect-section">
-                                        <button className="px-3 py-2 bg-white/10 rounded-md hover:bg-white/20 transition" onClick={() => openConnectModal && openConnectModal()}>
-                                            Connect Wallet
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </>
-            )}
-
-            <div className="settings-content-container">
+            <div className="page-wrap">
                 {/* Settings Header */}
                 <h1 className="settings-header">Settings</h1>
                 <p className="settings-desc">Manage your account, balance, and payment options here.</p>
@@ -373,8 +190,9 @@ const SettingsPage = React.memo(() => {
                         </div>
                     ) : (
                         <div className="settings-account-card" style={{
-                            background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-                            border: '2px solid #2c3e50',
+                            background: '#181818',
+                            border: '1px solid #333',
+                            borderRadius: '12px',
                             textAlign: 'center',
                             padding: '40px 32px'
                         }}>
@@ -383,7 +201,7 @@ const SettingsPage = React.memo(() => {
                                 fontWeight: '700',
                                 color: '#fff',
                                 marginBottom: '12px',
-                                fontFamily: 'Schibsted Grotesk'
+                                fontFamily: 'system-ui, -apple-system, sans-serif'
                             }}>
                                 Connect Your Wallet
                             </div>
@@ -396,27 +214,8 @@ const SettingsPage = React.memo(() => {
                                 Sign in with your crypto wallet to access your account settings, view balance, and manage payment methods.
                             </div>
                             <button
+                                className="px-4 py-3 bg-blue-500 rounded-md hover:bg-blue-600 transition-all duration-200 text-white font-medium text-sm active:scale-95"
                                 onClick={() => openConnectModal && openConnectModal()}
-                                style={{
-                                    background: 'linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%)',
-                                    color: '#fff',
-                                    border: 'none',
-                                    borderRadius: '12px',
-                                    padding: '14px 32px',
-                                    fontSize: '16px',
-                                    fontWeight: '600',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s ease',
-                                    boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
-                                }}
-                                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
-                                    e.currentTarget.style.transform = 'translateY(-2px)';
-                                    e.currentTarget.style.boxShadow = '0 6px 16px rgba(59, 130, 246, 0.4)';
-                                }}
-                                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
-                                    e.currentTarget.style.transform = 'translateY(0px)';
-                                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.3)';
-                                }}
                             >
                                 Connect Wallet to Continue
                             </button>
@@ -443,7 +242,7 @@ const SettingsPage = React.memo(() => {
                 <div style={{ display: 'flex', gap: 32, marginBottom: 40, maxWidth: 900 }}>
                     {/* Automatic Top-Up Card */}
                     <div style={{ background: '#181818', border: '1.5px solid #444', borderRadius: 18, padding: 32, flex: 1, color: '#fff', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: 280 }}>
-                        <div style={{ fontWeight: 900, fontSize: 28, fontFamily: 'Schibsted Grotesk', marginBottom: 8, lineHeight: 1.1 }}>
+                        <div style={{ fontWeight: 900, fontSize: 28, fontFamily: 'system-ui, -apple-system, sans-serif', marginBottom: 8, lineHeight: 1.1 }}>
                             Automatic Top-Up
                         </div>
                         <div style={{ color: '#bbb', fontSize: 13, marginBottom: 18 }}>
@@ -458,30 +257,17 @@ const SettingsPage = React.memo(() => {
                     </div>
                     {/* Payment Methods Card */}
                     <div style={{ background: '#181818', border: '1.5px solid #444', borderRadius: 18, padding: 32, flex: 1, color: '#fff', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: 280 }}>
-                        <div style={{ fontWeight: 900, fontSize: 28, fontFamily: 'Schibsted Grotesk', marginBottom: 8, lineHeight: 1.1 }}>
+                        <div style={{ fontWeight: 900, fontSize: 28, fontFamily: 'system-ui, -apple-system, sans-serif', marginBottom: 8, lineHeight: 1.1 }}>
                             Payment Methods
                         </div>
                         <div style={{ color: '#bbb', fontSize: 13, marginBottom: 18 }}>
                             Manage your connected payment options. Connect your wallet and the same will be used for auto top-ups (if enabled).
                         </div>
                         <button
-                            style={{
-                                background: user ? '#444' : '#fff',
-                                color: user ? '#bbb' : '#181818',
-                                fontWeight: 700,
-                                fontSize: 18,
-                                borderRadius: 10,
-                                border: 'none',
-                                padding: '12px 28px',
-                                cursor: user ? 'not-allowed' : 'pointer',
-                                marginTop: 'auto',
-                                minWidth: 120,
-                                width: '60%',
-                                textAlign: 'center',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                            }}
+                            className={`px-6 py-3 rounded-md font-medium text-sm transition-all duration-200 active:scale-95 ${user
+                                ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                                : 'bg-blue-500 text-white hover:bg-blue-600 cursor-pointer'
+                                }`}
                             disabled={!!user}
                             onClick={() => {
                                 if (!user && openConnectModal) openConnectModal();
@@ -536,8 +322,6 @@ const SettingsPage = React.memo(() => {
                     </div>
                 )}
 
-
-
                 <div className="settings-table-container">
                     <table className="settings-table">
                         <thead>
@@ -575,4 +359,4 @@ const SettingsPage = React.memo(() => {
     );
 });
 
-export default SettingsPage; 
+export default SettingsPage;

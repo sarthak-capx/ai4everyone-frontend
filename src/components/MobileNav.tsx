@@ -11,7 +11,7 @@ const MobileNav = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
-    const { user, setUser } = useUser();
+    const { user, logoutUser } = useUser();
     const { disconnect } = useDisconnect();
     const { isConnected, status } = useAccount();
     const isWalletLoading = status === 'connecting' || status === 'reconnecting';
@@ -47,8 +47,8 @@ const MobileNav = () => {
         }
     }, [mobileMenuOpen]);
 
-    const navItemBase = 'flex items-center gap-[11px] p-3 cursor-pointer transition-colors duration-200 text-[#848484] text-[16px] font-normal hover:bg-white/5';
-    const navActive = 'bg-white/5 text-white';
+    const navItemBase = 'flex items-center gap-[11px] p-3 cursor-pointer transition-all duration-200 text-[#848484] text-[16px] font-normal hover:bg-white/10 hover:text-white active:bg-white/20 active:scale-[0.98]';
+    const navActive = 'bg-white/10 text-white';
 
     const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
 
@@ -61,11 +61,11 @@ const MobileNav = () => {
     const isActive = (path: string) => location.pathname === path;
 
     const handleLogout = () => {
-        setUser(null);
-        secureStorage.secureLogout();
-        try { disconnect(); } catch { }
+        logoutUser();
         setMobileMenuOpen(false);
     };
+
+    const showAccountInfo = isConnected && !!user;
 
     return (
         <div className="md:hidden">
@@ -83,20 +83,20 @@ const MobileNav = () => {
                     aria-label="Open menu"
                     aria-controls="mobile-sidebar"
                     aria-expanded={mobileMenuOpen}
-                    className="w-6 h-6 cursor-pointer flex items-center justify-center"
+                    className="w-10 h-10 cursor-pointer flex items-center justify-center rounded-md transition-all duration-200 hover:bg-white/10 active:bg-white/20 active:scale-95"
                     onClick={toggleMobileMenu}
                 >
                     <img
                         src="/images/menu_alt_02.png"
                         alt="Menu"
-                        className="w-10 h-[30px] opacity-80 transition-opacity duration-200 hover:opacity-100"
+                        className="w-6 h-6 opacity-80 transition-all duration-200 hover:opacity-100"
                     />
                 </button>
             </div>
 
             {/* Mobile Sidebar Overlay and Drawer */}
             <div
-                className={`fixed inset-0 bg-black/75 z-[1000] transition-opacity duration-300 ${mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+                className={`fixed inset-0 bg-black/75 backdrop-blur-sm z-[1000] transition-all duration-300 ease-in-out ${mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
                 onClick={toggleMobileMenu}
                 aria-hidden="true"
             />
@@ -115,10 +115,10 @@ const MobileNav = () => {
                         type="button"
                         ref={firstFocusableRef}
                         aria-label="Close menu"
-                        className="p-2 rounded hover:bg-white/10 active:bg-white/20"
+                        className="p-2 rounded-md transition-all duration-200 hover:bg-white/10 active:bg-white/20 active:scale-95 hover:text-white"
                         onClick={() => setMobileMenuOpen(false)}
                     >
-                        <X size={18} className="text-[#9B9797]" />
+                        <X size={18} className="text-[#9B9797] transition-colors duration-200" />
                     </button>
                 </div>
 
@@ -179,7 +179,7 @@ const MobileNav = () => {
                     </button>
 
                     <button
-                        className={`${navItemBase} ${isActive('/docs') ? navActive : ''} bg-black border border-[#383940] rounded-[12px] mx-2 my-3 justify-between text-white w-full text-left`}
+                        className={`${navItemBase} ${isActive('/docs') ? navActive : ''} bg-black border border-[#383940] rounded-[12px] mx-4 my-3 justify-between text-white w-[calc(100%-2rem)] text-left`}
                         onClick={() => handleNavigation('/docs')}
                         aria-current={isActive('/docs') ? 'page' : undefined}
                     >
@@ -197,13 +197,13 @@ const MobileNav = () => {
                     <div className="flex items-center gap-[21px] py-2">
                         <a href="https://t.me/" target="_blank" rel="noopener noreferrer" aria-label="Telegram" className="flex items-center justify-center w-6 h-6 transition-opacity duration-200 hover:opacity-80">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <path d="M21.944 2.112a1.5 1.5 0 0 0-1.6-.2L2.7 9.1a1.5 1.5 0 0 0 .1 2.8l4.7 1.6 1.7 5.2a1.5 1.5 0 0 0 2.7.3l2.1-3.2 4.6 3.4a1.5 1.5 0 0 0 2.4-1l2-15a1.5 1.5 0 0 0-.526-1.188zM9.7 15.2l-1.2-3.7 8.2-6.2-7 7.6zm2.2 3.1l-1.1-3.3 1.7-1.3 2.1 1.5zm7.1-1.2-4.2-3.1 5.2-7.6z" fill="#9B9797" />
+                                <path d="M21.944 2.112a1.5 1.5 0  0 0-1.6-.2L2.7 9.1a1.5 1.5 0  0 0 .1 2.8l4.7 1.6 1.7 5.2a1.5 1.5 0  0 0 2.7.3l2.1-3.2 4.6 3.4a1.5 1.5 0  0 0 2.4-1l2-15a1.5 1.5 0  0 0-.526-1.188zM9.7 15.2l-1.2-3.7 8.2-6.2-7 7.6zm2.2 3.1l-1.1-3.3 1.7-1.3 2.1 1.5zm7.1-1.2-4.2-3.1 5.2-7.6z" fill="#9B9797" />
                             </svg>
                         </a>
 
                         <a href="https://discord.gg/" target="_blank" rel="noopener noreferrer" aria-label="Discord" className="flex items-center justify-center w-6 h-6 transition-opacity duration-200 hover:opacity-80">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <path d="M20.317 4.369a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0  0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0  0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0  0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0  0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0  0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" fill="#9B9797" />
+                                <path d="M20.317 4.369a19.791 19.791 0  0 0-4.885-1.515.074.074 0  0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0  0 0-5.487 0 12.64 12.64 0  0 0-.617-1.25.077.077 0  0 0-.079-.037A19.736 19.736 0  0 0 3.677 4.37a.07.07 0  0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0  0 0 .031.057 19.9 19.9 0  0 0 5.993 3.03.078.078 0  0 0 .084-.028 14.09 14.09 0  0  1 1.226-1.994.076.076 0  0 0-.041-.106 13.107 13.107 0  0 1-1.872-.892.077.077 0  0 1-.008-.128 10.2 10.2 0  0 0 .372-.292.074.074 0  0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0  0 1 .078.01c.12.098.246.198.373.292a.077.077 0  0 1-.006.127 12.299 12.299 0  0 1-1.873.892.077.077 0  0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0  0 0 .084.028 19.839 19.839 0  0 0 6.002-3.03.077.077 0  0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0  0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" fill="#9B9797" />
                             </svg>
                         </a>
 
@@ -216,17 +216,17 @@ const MobileNav = () => {
 
                     {/* User Section */}
                     <div className="p-3">
-                        {user ? (
+                        {showAccountInfo ? (
                             <div className="flex justify-between items-center gap-[11px]">
                                 <div className="flex items-center gap-[11px]">
                                     <div className="w-6 h-6 bg-[#9B9797] rounded-full flex items-center justify-center text-[12px] font-semibold text:white">
-                                        <span>{user.name ? user.name[0].toUpperCase() : 'U'}</span>
+                                        <span>{user?.name ? user.name[0].toUpperCase() : 'U'}</span>
                                     </div>
                                     {isWalletLoading ? (
                                         <span className="text-[16px] text-[#9B9797]">Checking wallet…</span>
                                     ) : (
                                         <span className="text-[16px] text-[#9B9797]">
-                                            {user.email.length > 15 ? user.email.slice(0, 15) + '...' : user.email}
+                                            {user?.email && user.email.length > 15 ? user.email.slice(0, 15) + '...' : (user?.email || '')}
                                         </span>
                                     )}
                                 </div>
