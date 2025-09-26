@@ -9,7 +9,7 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { address, isConnected } = useAccount();
-  const { user, logoutUser } = useUser();
+  const { user, logoutUser, loginUser } = useUser();
   const { openConnectModal } = useConnectModal();
 
   const isActive = (path: string) => location.pathname === path;
@@ -52,7 +52,15 @@ const Sidebar = () => {
           </a>
         </div>
 
-        {showAccountInfo ? (
+        {!isConnected ? (
+          <button className="px-3 py-2 bg-blue-500 rounded-md hover:bg-blue-600 transition-all duration-200 text-white font-medium text-sm active:scale-95" onClick={() => openConnectModal()}>
+            Connect Wallet
+          </button>
+        ) : !user ? (
+          <button className="px-3 py-2 bg-blue-500 rounded-md hover:bg-blue-600 transition-all duration-200 text-white font-medium text-sm active:scale-95" onClick={loginUser}>
+            Sign In
+          </button>
+        ) : (
           <div className="flex items-center justify-between w-full space-x-6">
             <div className="min-w-0 flex-1">
               <p
@@ -78,10 +86,6 @@ const Sidebar = () => {
               <LogOut size={18} color="#888" className="hover:text-red-400 transition-colors duration-200" />
             </button>
           </div>
-        ) : (
-          <button className="px-3 py-2 bg-blue-500 rounded-md hover:bg-blue-600 transition-all duration-200 text-white font-medium text-sm active:scale-95" onClick={() => openConnectModal && openConnectModal()}>
-            Connect Wallet
-          </button>
         )}
       </div>
     </aside>

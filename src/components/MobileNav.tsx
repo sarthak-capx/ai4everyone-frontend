@@ -11,9 +11,8 @@ const MobileNav = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
-    const { user, logoutUser } = useUser();
+    const { user, logoutUser, loginUser } = useUser();
     const { address, isConnected } = useAccount();
-    const isWalletLoading = status === 'connecting' || status === 'reconnecting';
     const { openConnectModal } = useConnectModal();
 
     const sidebarRef = useRef<HTMLDivElement | null>(null);
@@ -58,10 +57,6 @@ const MobileNav = () => {
     };
 
     const isActive = (path: string) => location.pathname === path;
-
-    const handleLogout = () => {
-        logoutUser();
-    };
 
     const displayEmail = (email?: string) => {
         if (!email) return '';
@@ -219,7 +214,27 @@ const MobileNav = () => {
 
                     {/* User Section */}
                     <div className="p-3">
-                        {showAccountInfo ? (
+                        {!isConnected ? (
+                            <button
+                                className="w-full px-3 py-2 bg-blue-500 rounded-md hover:bg-blue-600 transition-all duration-200 text-white font-medium text-sm active:scale-95"
+                                onClick={() => {
+                                    openConnectModal();
+                                    setMobileMenuOpen(false);
+                                }}
+                            >
+                                Connect Wallet
+                            </button>
+                        ) : !user ? (
+                            <button
+                                className="w-full px-3 py-2 bg-blue-500 rounded-md hover:bg-blue-600 transition-all duration-200 text-white font-medium text-sm active:scale-95"
+                                onClick={() => {
+                                    loginUser();
+                                    setMobileMenuOpen(false);
+                                }}
+                            >
+                                Sign In
+                            </button>
+                        ) : (
                             <div className="flex justify-between items-center gap-[11px]">
                                 <div className="flex items-center gap-[11px]">
                                     <div className="w-6 h-6 bg-[#9B9797] rounded-full flex items-center justify-center text-[12px] font-semibold text:white">
@@ -232,7 +247,7 @@ const MobileNav = () => {
                                 <button
                                     className="bg-transparent border-0 p-0 cursor-pointer flex items-center justify-center"
                                     onClick={() => {
-                                        handleLogout();
+                                        logoutUser();
                                         setMobileMenuOpen(false);
                                     }}
                                     aria-label="Logout"
@@ -240,16 +255,6 @@ const MobileNav = () => {
                                     <LogOut size={18} color="#888" />
                                 </button>
                             </div>
-                        ) : (
-                            <button
-                                className="w-full px-3 py-2 bg-blue-500 rounded-md hover:bg-blue-600 transition"
-                                onClick={() => {
-                                    openConnectModal && openConnectModal();
-                                    setMobileMenuOpen(false);
-                                }}
-                            >
-                                Connect Wallet
-                            </button>
                         )}
                     </div>
                 </div>
